@@ -1,0 +1,86 @@
+name: Send Audition Application Email
+
+on:
+  repository_dispatch:
+    types: [new_audition_application]
+
+jobs:
+  send-email:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Send Email Notification
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com
+        server_port: 587
+        username: ${{ secrets.EMAIL_USERNAME }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        subject: "New Audition Application - ${{ github.event.client_payload.fullName }}"
+        to: ${{ secrets.ADMIN_EMAIL }}
+        from: "Trihari Universal Website <noreply@trihariuniversal.com>"
+        html_body: |
+          <h2>🎬 New Audition Application Received</h2>
+          
+          <p><strong>Application ID:</strong> ${{ github.event.client_payload.applicationId }}</p>
+          <p><strong>Submitted:</strong> ${{ github.event.client_payload.submittedAt }}</p>
+          
+          <h3>👤 Applicant Details</h3>
+          <ul>
+            <li><strong>Name:</strong> ${{ github.event.client_payload.fullName }}</li>
+            <li><strong>Email:</strong> ${{ github.event.client_payload.email }}</li>
+            <li><strong>Phone:</strong> ${{ github.event.client_payload.phone }}</li>
+            <li><strong>City:</strong> ${{ github.event.client_payload.city }}</li>
+            <li><strong>Date of Birth:</strong> ${{ github.event.client_payload.dateOfBirth || 'Not provided' }}</li>
+            <li><strong>Gender:</strong> ${{ github.event.client_payload.gender || 'Not specified' }}</li>
+          </ul>
+          
+          <h3>🎭 Profile Information</h3>
+          <ul>
+            <li><strong>Experience Level:</strong> ${{ github.event.client_payload.experience }}</li>
+            <li><strong>Primary Skills:</strong> ${{ github.event.client_payload.skills }}</li>
+            <li><strong>Instagram:</strong> ${{ github.event.client_payload.instagram || 'Not provided' }}</li>
+            <li><strong>Portfolio:</strong> ${{ github.event.client_payload.portfolio || 'Not provided' }}</li>
+            <li><strong>File Uploaded:</strong> ${{ github.event.client_payload.hasFile && 'Yes' || 'No' }}</li>
+          </ul>
+          
+          <hr>
+          <p><em>Reply directly to this email to contact the applicant: ${{ github.event.client_payload.email }}</em></p>
+          <p><small>This application was submitted through your Trihari Universal website and is stored in your GitHub repository under the submissions folder.</small></p>
+
+    - name: Send Confirmation Email to Applicant
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com
+        server_port: 587
+        username: ${{ secrets.EMAIL_USERNAME }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        subject: "Application Received - Trihari Universal"
+        to: ${{ github.event.client_payload.email }}
+        from: "Trihari Universal <noreply@trihariuniversal.com>"
+        html_body: |
+          <h2>🎬 Thank You for Your Application!</h2>
+          
+          <p>Dear ${{ github.event.client_payload.fullName }},</p>
+          
+          <p>Thank you for your audition application to <strong>Trihari Universal</strong>!</p>
+          
+          <p>We have successfully received your application and will review it carefully. If you are shortlisted, we will contact you within 2-3 business days.</p>
+          
+          <h3>📋 Application Summary</h3>
+          <ul>
+            <li><strong>Application ID:</strong> ${{ github.event.client_payload.applicationId }}</li>
+            <li><strong>Name:</strong> ${{ github.event.client_payload.fullName }}</li>
+            <li><strong>Email:</strong> ${{ github.event.client_payload.email }}</li>
+            <li><strong>Experience Level:</strong> ${{ github.event.client_payload.experience }}</li>
+            <li><strong>Primary Skills:</strong> ${{ github.event.client_payload.skills }}</li>
+            <li><strong>Submitted:</strong> ${{ github.event.client_payload.submittedAt }}</li>
+          </ul>
+          
+          <p>Please keep your Application ID for future reference.</p>
+          
+          <p>Best regards,<br>
+          <strong>The Trihari Universal Team</strong></p>
+          
+          <hr>
+          <p><small>This is an automated confirmation email. Please do not reply to this message.</small></p>
