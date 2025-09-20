@@ -5,6 +5,7 @@ Trihari Universal — Simplified version for debugging
 import React, {useState, useRef, useEffect} from 'react'
 import {motion, useInView, useScroll, useTransform} from 'framer-motion'
 import GitHubFormHandler from './utils/GitHubFormHandler'
+import logo from './assets/logo.png'
 
 export default function TrihariUniversalSimple(){
   const [dark, setDark] = useState(true)
@@ -261,7 +262,7 @@ export default function TrihariUniversalSimple(){
           transition={{ type: "spring", stiffness: 400, damping: 10 }}
         >
           <motion.img 
-            src="/circular logog trihari.png" 
+            src={logo} 
             alt="Trihari Universal" 
             className="h-12 w-12 object-contain rounded-full"
             whileHover={{ rotate: 360 }}
@@ -408,7 +409,7 @@ export default function TrihariUniversalSimple(){
                   transition={{ duration: 1.2, delay: 0.6 }}
                 >
                   <motion.img 
-                    src="/circular logog trihari.png" 
+                    src={logo} 
                     alt="Trihari Universal Logo" 
                     className="h-16 w-16 object-contain mx-auto opacity-90 rounded-full"
                     animate={{ 
@@ -899,7 +900,7 @@ export default function TrihariUniversalSimple(){
                     viewport={{ once: true }}
                   >
                     <motion.img 
-                      src="/circular logog trihari.png" 
+                      src={logo} 
                       alt="Trihari Universal Logo" 
                       className="h-20 w-20 object-contain mx-auto opacity-90 rounded-full"
                       animate={{ 
@@ -1066,7 +1067,7 @@ export default function TrihariUniversalSimple(){
                   viewport={{ once: true }}
                 >
                   <motion.img 
-                    src="/circular logog trihari.png" 
+                    src={logo} 
                     alt="Trihari Universal Logo" 
                     className="h-12 w-12 object-contain mx-auto opacity-80 rounded-full ring-1 ring-blue-400/30"
                     animate={{ 
@@ -1658,7 +1659,7 @@ export default function TrihariUniversalSimple(){
             whileHover={{ scale: 1.05 }}
           >
             <motion.img 
-              src="/circular logog trihari.png" 
+              src={logo} 
               alt="logo" 
               className="h-10 w-10 rounded-full"
               whileHover={{ rotate: 180 }}
