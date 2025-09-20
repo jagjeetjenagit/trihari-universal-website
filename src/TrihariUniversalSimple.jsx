@@ -58,9 +58,9 @@ export default function TrihariUniversalSimple(){
       
       // Initialize GitHub form handler
       const githubHandler = new GitHubFormHandler({
-        owner: 'YOUR_GITHUB_USERNAME',  // Replace with your GitHub username
-        repo: 'YOUR_REPO_NAME',        // Replace with your repository name
-        token: 'YOUR_GITHUB_TOKEN'     // Replace with your GitHub token
+        owner: 'jagjeetjenagit',           // Your GitHub username
+        repo: 'trihari-universal-website', // Your repository name
+        token: 'YOUR_GITHUB_TOKEN'         // Replace with your GitHub token
       })
       
       // Submit to GitHub
