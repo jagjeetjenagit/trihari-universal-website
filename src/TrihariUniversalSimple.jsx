@@ -4,7 +4,7 @@ Trihari Universal — Simplified version for debugging
 
 import React, {useState, useRef, useEffect} from 'react'
 import {motion, useInView, useScroll, useTransform} from 'framer-motion'
-import GitHubFormHandler from './utils/GitHubFormHandler.js'
+import GitHubFormHandler from './utils/GitHubFormHandler'
 
 export default function TrihariUniversalSimple(){
   const [dark, setDark] = useState(true)
