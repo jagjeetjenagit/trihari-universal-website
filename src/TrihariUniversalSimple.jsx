@@ -10,8 +10,8 @@ import GoogleSheetsService from './services/GoogleSheetsService'
 import GoogleSheetsTestPanel from './components/GoogleSheetsTestPanel'
 // Import images from public folder with proper base URL and cache-busting
 const baseUrl = import.meta.env.BASE_URL || '/'
-const cacheVersion = '?v=2025-09-28-fix'
-const logo = `${baseUrl}circular logog trihari.png${cacheVersion}`
+const cacheVersion = '?v=2025-09-28-white-logo'
+const logo = `${baseUrl}trihari_universal_white.png${cacheVersion}`
 const founderImage = `${baseUrl}1000010434.jpg${cacheVersion}`
 
 // Section Divider Component - Mobile Only
