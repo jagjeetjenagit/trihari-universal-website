@@ -12,16 +12,6 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
-    assetsDir: 'assets',
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          motion: ['framer-motion'],
-          utils: ['@emailjs/browser']
-        }
-      }
-    },
-    chunkSizeWarningLimit: 1000
+    assetsDir: 'assets'
   }
 })

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Form Submission Diagnostics</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; background: #f5f5f5; border-radius: 5px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; }
+        .warning { background: #fff3cd; border: 1px solid #ffeaa7; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; }
+        button { padding: 10px 15px; margin: 5px; border: none; border-radius: 3px; cursor: pointer; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-warning { background: #ffc107; color: black; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Form Submission Diagnostics</h1>
+    
+    <div class="test-section warning">
+        <h2>Step 1: Check Form Status</h2>
+        <p>First, let's verify your Google Form is working:</p>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfx1uyXj0I5oE0Dn7Elmve4VJ3i5hRDjcPA2FG54nknzTCKXQ/viewform" target="_blank">
+            <button class="btn-primary">Open Google Form Manually</button>
+        </a>
+        <p><strong>Test:</strong> Fill out the form manually and see if it works. If manual submission fails, the issue is with the Google Form itself.</p>
+    </div>
+    
+    <div class="test-section">
+        <h2>Step 2: Test Basic Submission</h2>
+        <form action="https://docs.google.com/forms/d/e/1FAIpQLSfx1uyXj0I5oE0Dn7Elmve4VJ3i5hRDjcPA2FG54nknzTCKXQ/formResponse" method="POST" target="_blank" id="basicTest">
+            <input name="emailAddress" type="hidden" value="basictest@example.com">
+            <input name="entry.470858559" type="hidden" value="Basic Test User">
+            <input name="entry.1574003417" type="hidden" value="basictest@example.com">
+            
+            <p><strong>Testing:</strong> Only name and email (minimum required fields)</p>
+            <button type="submit" class="btn-success">Submit Basic Test</button>
+        </form>
+    </div>
+    
+    <div class="test-section">
+        <h2>Step 3: Check Entry IDs</h2>
+        <p>Current entry IDs being used:</p>
+        <ul>
+            <li>entry.470858559 → Full Name</li>
+            <li>entry.1574003417 → Email Address</li>
+            <li>entry.1394621864 → Phone Number</li>
+            <li>entry.163869454 → Age</li>
+            <li>entry.1222485795 → Years of Experience</li>
+            <li>entry.1667748542 → Primary Skills</li>
+            <li>entry.808555411 → Instagram Profile</li>
+            <li>entry.736087672 → Portfolio/Reel URL</li>
+            <li>entry.2037686470 → Tell us about yourself</li>
+            <li>entry.825280997 → Consent & Confirmation</li>
+        </ul>
+        <p><strong>Note:</strong> If these IDs are wrong, that could be why the form isn't receiving data.</p>
+    </div>
+    
+    <div class="test-section">
+        <h2>Step 4: Full Test with All Fields</h2>
+        <form action="https://docs.google.com/forms/d/e/1FAIpQLSfx1uyXj0I5oE0Dn7Elmve4VJ3i5hRDjcPA2FG54nknzTCKXQ/formResponse" method="POST" target="_blank" id="fullTest">
+            <input name="emailAddress" type="hidden" value="fulltest@example.com">
+            <input name="entry.470858559" type="hidden" value="Full Test User">
+            <input name="entry.1574003417" type="hidden" value="fulltest@example.com">
+            <input name="entry.1394621864" type="hidden" value="+91 9876543210">
+            <input name="entry.163869454" type="hidden" value="25">
+            <input name="entry.1222485795" type="hidden" value="2 years">
+            <input name="entry.1667748542" type="hidden" value="Acting, Dancing">
+            <input name="entry.808555411" type="hidden" value="https://instagram.com/testuser">
+            <input name="entry.736087672" type="hidden" value="https://youtube.com/testchannel">
+            <input name="entry.2037686470" type="hidden" value="Test description for about yourself section">
+            <input name="entry.825280997" type="hidden" value="I confirm my details are accurate and consent to be contacted for casting opportunities">
+            
+            <p><strong>Testing:</strong> All 10 form fields + emailAddress</p>
+            <button type="submit" class="btn-success">Submit Full Test</button>
+        </form>
+    </div>
+    
+    <div class="test-section error">
+        <h2>Step 5: Troubleshooting Checklist</h2>
+        <p>If submissions are still not working, check these:</p>
+        <ol>
+            <li><strong>Google Form Settings:</strong>
+                <ul>
+                    <li>Is "Accepting responses" turned ON?</li>
+                    <li>Is "Collect email addresses" turned ON or OFF?</li>
+                    <li>Are there any restrictions on who can respond?</li>
+                </ul>
+            </li>
+            <li><strong>Form URL:</strong> Make sure the form ID hasn't changed</li>
+            <li><strong>Entry IDs:</strong> Verify by inspecting the actual Google Form source</li>
+            <li><strong>Required Fields:</strong> Make sure all required fields in Google Form have corresponding entries</li>
+        </ol>
+    </div>
+    
+    <div class="test-section">
+        <h2>Step 6: Check Google Form Responses</h2>
+        <p>After testing, check your Google Form responses:</p>
+        <ol>
+            <li>Go to your Google Form</li>
+            <li>Click on the "Responses" tab</li>
+            <li>See if any test submissions appear</li>
+            <li>Check the timestamp to match your test submissions</li>
+        </ol>
+        <p><strong>Expected Results:</strong> You should see entries like "Basic Test User" and "Full Test User" if the tests worked.</p>
+    </div>
+    
+    <script>
+        // Add some debugging info
+        console.log('Form diagnostic page loaded');
+        console.log('Google Form URL: https://docs.google.com/forms/d/e/1FAIpQLSfx1uyXj0I5oE0Dn7Elmve4VJ3i5hRDjcPA2FG54nknzTCKXQ/viewform');
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = document.querySelectorAll('form');
+            forms.forEach((form, index) => {
+                form.addEventListener('submit', function(e) {
+                    console.log(`Form ${index + 1} submitted at:`, new Date().toISOString());
+                    console.log('Form data:', new FormData(form));
+                });
+            });
+        });
+    </script>
+    
+</body>
+</html>

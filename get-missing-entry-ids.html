@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Get Missing Entry IDs</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .step { background: #e3f2fd; padding: 15px; margin: 15px 0; border-radius: 5px; border-left: 4px solid #2196f3; }
+        .warning { background: #fff3e0; border-left-color: #ff9800; }
+        .success { background: #e8f5e8; border-left-color: #4caf50; }
+        code { background: #f5f5f5; padding: 2px 4px; border-radius: 3px; font-family: monospace; }
+        .field-list { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Find Missing Entry IDs</h1>
+    
+    <div class="warning step">
+        <h3>❌ Problem Identified</h3>
+        <p>Your Google Form has <strong>11 questions</strong> but our code only maps <strong>8 fields</strong>. We're missing entry IDs for:</p>
+        <ul>
+            <li><strong>Question 2: City</strong> (Required)</li>
+            <li><strong>Question 5: Date of Birth</strong> (Optional)</li>
+            <li><strong>Question 6: Gender</strong> (Optional)</li>
+        </ul>
+    </div>
+    
+    <div class="step">
+        <h3>📋 Your Complete Form Structure:</h3>
+        <div class="field-list">
+            <ol>
+                <li><strong>Full Name</strong> (Required) → <code>entry.470858559</code> ✅</li>
+                <li><strong>City</strong> (Required) → <code>entry.????</code> ❌ <strong>MISSING</strong></li>
+                <li><strong>Email Address</strong> (Required) → <code>entry.1574003417</code> ✅</li>
+                <li><strong>Phone Number</strong> (Required) → <code>entry.1394621864</code> ✅</li>
+                <li><strong>Date of Birth</strong> (Optional) → <code>entry.????</code> ❌ <strong>MISSING</strong></li>
+                <li><strong>Gender</strong> (Optional) → <code>entry.????</code> ❌ <strong>MISSING</strong></li>
+                <li><strong>Experience Level</strong> (Required) → <code>entry.1222485795</code> ✅</li>
+                <li><strong>Primary Skills</strong> (Required) → <code>entry.1667748542</code> ✅</li>
+                <li><strong>Instagram Profile</strong> (Optional) → <code>entry.808555411</code> ✅</li>
+                <li><strong>Portfolio/YouTube</strong> (Optional) → <code>entry.736087672</code> ✅</li>
+                <li><strong>File Upload</strong> (Optional) → <code>entry.????</code> ❌ <strong>MISSING</strong></li>
+            </ol>
+        </div>
+    </div>
+    
+    <div class="success step">
+        <h3>🛠️ How to Get Missing Entry IDs:</h3>
+        <ol>
+            <li><strong>Open your Google Form:</strong> 
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfx1uyXj0I5oE0Dn7Elmve4VJ3i5hRDjcPA2FG54nknzTCKXQ/viewform" target="_blank">Click here</a>
+            </li>
+            <li><strong>Get pre-filled link:</strong>
+                <ul>
+                    <li>Click the ⋮ (three dots) → "Get pre-filled link"</li>
+                    <li>Fill in test data for <strong>ALL 11 fields</strong>:</li>
+                    <ul>
+                        <li>Full Name: "Test User"</li>
+                        <li><strong>City: "Mumbai"</strong> ← Include this!</li>
+                        <li>Email: "test@example.com"</li>
+                        <li>Phone: "+91 9876543210"</li>
+                        <li><strong>Date of Birth: Select any date</strong> ← Include this!</li>
+                        <li><strong>Gender: Select "Male"</strong> ← Include this!</li>
+                        <li>Experience: "2 years"</li>
+                        <li>Skills: "Acting, Dancing"</li>
+                        <li>Instagram: "https://instagram.com/testuser"</li>
+                        <li>Portfolio: "https://youtube.com/testchannel"</li>
+                        <li><strong>File Upload: Upload any small image</strong> ← Include this!</li>
+                    </ul>
+                    <li>Click "Get link"</li>
+                </ul>
+            </li>
+            <li><strong>Extract Entry IDs:</strong>
+                <ul>
+                    <li>Copy the generated URL</li>
+                    <li>Look for patterns like <code>entry.1234567890</code></li>
+                    <li>Find the NEW entry IDs that we don't have yet</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+    
+    <div class="step">
+        <h3>🔍 What to Look For in the Pre-filled URL:</h3>
+        <p>You should see something like:</p>
+        <code>
+            https://docs.google.com/forms/d/e/1FAIpQLSfx1uyXj0I5oE0Dn7Elmve4VJ3i5hRDjcPA2FG54nknzTCKXQ/viewform?<br>
+            entry.470858559=Test+User&<br>
+            <strong>entry.XXXXXXXX=Mumbai&</strong> ← City entry ID<br>
+            entry.1574003417=test@example.com&<br>
+            entry.1394621864=+91+9876543210&<br>
+            <strong>entry.YYYYYYYY=2023-01-01&</strong> ← Date of Birth entry ID<br>
+            <strong>entry.ZZZZZZZZ=Male&</strong> ← Gender entry ID<br>
+            entry.1222485795=2+years&<br>
+            entry.1667748542=Acting,+Dancing&<br>
+            entry.808555411=https://instagram.com/testuser&<br>
+            entry.736087672=https://youtube.com/testchannel&<br>
+            <strong>entry.WWWWWWWW=file_info</strong> ← File upload entry ID
+        </code>
+    </div>
+    
+    <div class="warning step">
+        <h3>⚠️ Important Notes:</h3>
+        <ul>
+            <li><strong>Fill ALL 11 fields</strong> when creating the pre-filled link</li>
+            <li><strong>Don't skip any fields</strong> - we need all entry IDs</li>
+            <li><strong>Include file upload</strong> - this is crucial for the photo functionality</li>
+            <li>The missing City field is <strong>required</strong> - this could be why submissions fail</li>
+        </ul>
+    </div>
+    
+    <p><strong>Once you get the missing entry IDs, share them and I'll update the code!</strong></p>
+    
+</body>
+</html>

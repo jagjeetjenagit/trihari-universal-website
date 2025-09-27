@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Debug Test</title>
+</head>
+<body>
+    <h1>Debug Test - Minimal Form Submission</h1>
+    
+    <h2>Test 1: Just Required Fields</h2>
+    <form action="https://docs.google.com/forms/d/e/1FAIpQLSfx1uyXj0I5oE0Dn7Elmve4VJ3i5hRDjcPA2FG54nknzTCKXQ/formResponse" method="POST" target="_blank">
+        <!-- Only the most essential fields -->
+        <input name="emailAddress" type="hidden" value="debug@test.com">
+        <input name="entry.470858559" type="hidden" value="Debug Test User">
+        <input name="entry.1574003417" type="hidden" value="debug@test.com">
+        <input name="entry.1394621864" type="hidden" value="+91 9999999999">
+        
+        <p><strong>Testing:</strong> Full Name, Email, Phone + emailAddress field</p>
+        <input type="submit" value="TEST MINIMAL SUBMISSION" style="background: #059669; color: white; padding: 10px 20px; border: none; border-radius: 3px; cursor: pointer;">
+    </form>
+    
+    <hr>
+    
+    <h2>Test 2: Check Form Status</h2>
+    <p>If the minimal test above doesn't work, the problem might be:</p>
+    <ul>
+        <li>Google Form is not accepting responses (check form settings)</li>
+        <li>Form URL changed</li>
+        <li>Entry IDs are incorrect</li>
+        <li>Google Forms is blocking submissions</li>
+    </ul>
+    
+    <h2>Test 3: Manual Verification</h2>
+    <p>Go directly to your Google Form and try filling it manually:</p>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfx1uyXj0I5oE0Dn7Elmve4VJ3i5hRDjcPA2FG54nknzTCKXQ/viewform" target="_blank" style="background: #2563eb; color: white; padding: 10px 20px; text-decoration: none; border-radius: 3px;">Open Google Form Manually</a>
+    
+    <h2>Troubleshooting Steps:</h2>
+    <ol>
+        <li>First, test the minimal form above</li>
+        <li>If that fails, try the manual form link</li>
+        <li>Check if you can submit manually</li>
+        <li>Check Google Form settings (accepting responses, etc.)</li>
+        <li>Check if form ID or entry IDs changed</li>
+    </ol>
+    
+</body>
+</html>

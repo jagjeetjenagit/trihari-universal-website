@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Direct Form Test</title>
+</head>
+<body>
+    <h1>Direct Google Form Test</h1>
+    <p>This will submit directly without showing drafts.</p>
+    
+    <form action="https://docs.google.com/forms/d/e/1FAIpQLSfx1uyXj0I5oE0Dn7Elmve4VJ3i5hRDjcPA2FG54nknzTCKXQ/formResponse" method="POST">
+        <input name="entry.470858559" type="hidden" value="Direct Test User">
+        <input name="entry.1574003417" type="hidden" value="directtest@example.com">
+        <input name="entry.1394621864" type="hidden" value="9999999999">
+        <input name="entry.163869454" type="hidden" value="25">
+        <input name="entry.1222485795" type="hidden" value="2 years">
+        <input name="entry.1667748542" type="hidden" value="Acting">
+        <input name="entry.808555411" type="hidden" value="">
+        <input name="entry.736087672" type="hidden" value="">
+        <input name="entry.2037686470" type="hidden" value="Direct test submission">
+        <input name="entry.825280997" type="hidden" value="I confirm my details are accurate and consent to be contacted for casting opportunities">
+        
+        <button type="submit" style="background: green; color: white; padding: 15px 30px; border: none; border-radius: 5px; font-size: 16px;">DIRECT SUBMIT TEST</button>
+    </form>
+    
+    <script>
+    // Auto-submit after page loads to avoid draft issues
+    setTimeout(function() {
+        if (confirm('Auto-submit the test form now?')) {
+            document.querySelector('form').submit();
+        }
+    }, 2000);
+    </script>
+    
+</body>
+</html>

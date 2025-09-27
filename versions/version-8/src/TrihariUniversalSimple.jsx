@@ -6,8 +6,6 @@ import React, {useState, useRef, useEffect} from 'react'
 import {motion, useInView, useScroll, useTransform} from 'framer-motion'
 import emailjs from '@emailjs/browser'
 import GitHubFormHandler from './utils/GitHubFormHandler'
-import GoogleSheetsService from './services/GoogleSheetsService'
-import GoogleSheetsTestPanel from './components/GoogleSheetsTestPanel'
 import logo from './assets/trihari_universal_white.png'
 import founderImage from './assets/1000010434.jpg'
 
@@ -335,62 +333,22 @@ Ask applicant to resend photos directly.`
         subject: `🎬 New Audition Application: ${formData.get('fullName')} from ${formData.get('city')}`
       }
       
-      // Prepare data for Google Sheets
-      const sheetsData = {
-        fullName: formData.get('fullName'),
-        email: formData.get('email'),
-        phone: formData.get('phone'),
-        city: formData.get('city'),
-        age: formData.get('age') || '',
-        dob: formData.get('dob') || '',
-        gender: formData.get('gender') || '',
-        experience: formData.get('experience') || '',
-        skills: formData.get('skills') || '',
-        instagram: formData.get('instagram') || '',
-        portfolio: formData.get('portfolio') || '',
-        aboutYourself: formData.get('aboutYourself') || '',
-        consent: formData.get('consent') || false,
-        photoUrl: photoInfo || 'No photo uploaded'
-      }
-
-      // Submit to both services (parallel execution)
-      const emailPromise = emailjs.send(
+      // Send email via EmailJS
+      await emailjs.send(
         EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID,
         templateParams,
         EMAILJS_PUBLIC_KEY
       )
+      
+      // Success message
+      alert(`🎬 Thank you ${formData.get('fullName')}! Your audition application has been sent successfully.
 
-      const sheetsPromise = GoogleSheetsService.submitToSheets(sheetsData)
-
-      // Wait for both to complete
-      const [emailResult, sheetsResult] = await Promise.allSettled([emailPromise, sheetsPromise])
-
-      // Determine success message
-      const emailSuccess = emailResult.status === 'fulfilled'
-      const sheetsSuccess = sheetsResult.status === 'fulfilled' && sheetsResult.value?.success
-
-      let successMessage = `🎬 Thank you ${formData.get('fullName')}! Your audition application has been processed.
-
-📧 Email: ${emailSuccess ? '✅ Sent successfully' : '❌ Failed to send'}
-📊 Database: ${sheetsSuccess ? '✅ Saved to spreadsheet' : '⚠️ Email sent (spreadsheet not configured)'}
-
-We've received your application and will contact you if shortlisted.
+📧 We've received your application and will contact you if shortlisted.
 
 ${headshotFiles && headshotFiles.length > 0 && headshotFiles[0].size > 0 ? `📱 We may WhatsApp you at ${formData.get('phone')} to request your photos.` : ''}
 
-Good luck! 🌟`
-
-      // Handle specific error cases
-      if (!emailSuccess && sheetsSuccess) {
-        successMessage = `⚠️ Your application was saved to our database, but the email failed to send. We have your information and will contact you if shortlisted.
-
-Error: ${emailResult.reason?.message || 'Email service unavailable'}`
-      } else if (!emailSuccess && !sheetsSuccess) {
-        throw new Error('Both email and database submission failed. Please try again.')
-      }
-
-      alert(successMessage)
+Good luck! 🌟`)
       
       // Reset form
       e.target.reset()
@@ -2216,9 +2174,6 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
           </div>
         </div>
       </motion.footer>
-
-      {/* Development Test Panel */}
-      <GoogleSheetsTestPanel />
 
     </div>
   )

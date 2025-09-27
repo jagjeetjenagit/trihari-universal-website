@@ -4,62 +4,8 @@ Trihari Universal — Simplified version for debugging
 
 import React, {useState, useRef, useEffect} from 'react'
 import {motion, useInView, useScroll, useTransform} from 'framer-motion'
-import emailjs from '@emailjs/browser'
 import GitHubFormHandler from './utils/GitHubFormHandler'
-import GoogleSheetsService from './services/GoogleSheetsService'
-import GoogleSheetsTestPanel from './components/GoogleSheetsTestPanel'
-import logo from './assets/trihari_universal_white.png'
-import founderImage from './assets/1000010434.jpg'
-
-// Section Divider Component - Mobile Only
-const SectionDivider = () => (
-  <div className="block md:hidden w-full py-6 sm:py-8 relative">
-    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/5 to-transparent" />
-    <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 relative">
-      <div className="flex items-center justify-center">
-        <div className="flex items-center space-x-3 sm:space-x-4">
-          <motion.div 
-            className="w-12 sm:w-16 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent"
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            transition={{ duration: 1.2 }}
-            viewport={{ once: true }}
-          />
-          <motion.div 
-            className="w-2 h-2 rounded-full bg-blue-500/60 shadow-lg shadow-blue-500/30"
-            initial={{ scale: 0, rotate: 180 }}
-            whileInView={{ scale: 1, rotate: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            viewport={{ once: true }}
-          />
-          <motion.div 
-            className="w-12 sm:w-16 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent"
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            transition={{ duration: 1.2 }}
-            viewport={{ once: true }}
-          />
-        </div>
-      </div>
-      
-      {/* Mobile-specific visual enhancement dots */}
-      <div className="mt-4 opacity-20">
-        <div className="flex justify-center space-x-1">
-          {[...Array(3)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="w-1 h-1 rounded-full bg-blue-400"
-              initial={{ opacity: 0, y: 5 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.8 + i * 0.1 }}
-              viewport={{ once: true }}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  </div>
-)
+import logo from './assets/logo.png'
 
 export default function TrihariUniversalSimple(){
   const [dark, setDark] = useState(true)
@@ -100,314 +46,53 @@ export default function TrihariUniversalSimple(){
       .catch(() => {/* silent */})
   }, [])
 
-  // Form submission handler with EmailJS
+  // Form submission handler for GitHub Backend
   const handleFormSubmit = async (e) => {
     e.preventDefault()
     
-    const submitButton = e.target.querySelector('button[type="submit"]')
-    const originalText = submitButton.textContent
-    
-    // Clear any existing error messages
-    const existingErrors = document.querySelectorAll('.error-message')
-    existingErrors.forEach(error => error.remove())
-    
-    const formData = new FormData(e.target)
-    
-    // Validation - Check all required fields
-    const requiredFields = [
-      { name: 'fullName', label: 'Full Name', element: e.target.querySelector('[name="fullName"]') },
-      { name: 'city', label: 'City', element: e.target.querySelector('[name="city"]') },
-      { name: 'email', label: 'Email Address', element: e.target.querySelector('[name="email"]') },
-      { name: 'phone', label: 'Phone Number', element: e.target.querySelector('[name="phone"]') },
-      { name: 'experience', label: 'Experience', element: e.target.querySelector('[name="experience"]') },
-      { name: 'skills', label: 'Primary Skills', element: e.target.querySelector('[name="skills"]') },
-      { name: 'consent', label: 'Consent', element: e.target.querySelector('[name="consent"]') }
-    ]
-    
-    let hasErrors = false
-    const errors = []
-    
-    // Check each required field
-    for (const field of requiredFields) {
-      const value = formData.get(field.name)
-      
-      if (field.name === 'consent') {
-        if (!value) {
-          hasErrors = true
-          errors.push({ field: field.element, message: `${field.label} is required - You must accept the terms` })
-        }
-      } else if (!value || value.toString().trim() === '' || value === 'Select years' || value === 'Select Gender') {
-        hasErrors = true
-        errors.push({ field: field.element, message: `${field.label} is required` })
-      }
-    }
-    
-    // Email validation
-    const email = formData.get('email')
-    if (email && !email.includes('@')) {
-      hasErrors = true
-      errors.push({ field: e.target.querySelector('[name="email"]'), message: 'Please enter a valid email address' })
-    }
-    
-    // Phone validation (basic)
-    const phone = formData.get('phone')
-    if (phone && phone.replace(/[^\d]/g, '').length < 10) {
-      hasErrors = true
-      errors.push({ field: e.target.querySelector('[name="phone"]'), message: 'Please enter a valid phone number (at least 10 digits)' })
-    }
-    
-    // Show errors if any
-    if (hasErrors) {
-      errors.forEach(error => {
-        const errorDiv = document.createElement('div')
-        errorDiv.className = 'error-message'
-        errorDiv.style.cssText = `
-          color: #dc2626;
-          font-size: 14px;
-          margin-top: 5px;
-          font-weight: 500;
-          background: rgba(220, 38, 38, 0.1);
-          padding: 8px 12px;
-          border-radius: 4px;
-          border-left: 3px solid #dc2626;
-        `
-        errorDiv.textContent = error.message
-        error.field.parentNode.appendChild(errorDiv)
-        
-        // Add red border to field
-        error.field.style.borderColor = '#dc2626'
-        error.field.style.boxShadow = '0 0 0 1px #dc26261a'
-      })
-      
-      // Scroll to first error
-      errors[0].field.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      errors[0].field.focus()
-      
-      // Show summary alert
-      alert(`❌ Please fill in all required fields:\n\n${errors.map(e => `• ${e.message}`).join('\n')}`)
-      
-      // Reset button
-      submitButton.textContent = originalText
-      submitButton.disabled = false
-      return
-    }
-    
     try {
       // Show loading state
+      const submitButton = e.target.querySelector('button[type="submit"]')
+      const originalText = submitButton.textContent
       submitButton.textContent = 'SENDING...'
       submitButton.disabled = true
       
-      // Upload photos to Cloudinary
-      let photoInfo = '❌ No photos uploaded'
-      let photoUrls = []
-      let photoHtml = '<div style="color: white !important; padding: 20px; text-align: center;">❌ No photos uploaded</div>'
+      // Initialize GitHub form handler
+      const githubHandler = new GitHubFormHandler({
+        owner: 'jagjeetjenagit',           // Your GitHub username
+        repo: 'trihari-universal-website', // Your repository name
+        token: 'YOUR_GITHUB_TOKEN'         // Replace with your GitHub token
+      })
       
-      // Cloudinary configuration - YOUR ACCOUNT
-      const CLOUDINARY_UPLOAD_URL = 'https://api.cloudinary.com/v1_1/dn78mntyo/image/upload'
-      const CLOUDINARY_UPLOAD_PRESET = 'audition_photos' // Create this preset in your dashboard, or will use fallback
+      // Submit to GitHub
+      const result = await githubHandler.submitForm(new FormData(e.target))
       
-      const headshotFiles = formData.getAll('headshot')
-      
-      if (headshotFiles && headshotFiles.length > 0 && headshotFiles[0].size > 0) {
-        submitButton.textContent = 'UPLOADING PHOTOS...'
+      if (result.success) {
+        // Success message with application ID
+        alert(`✅ Thank you for your application! Your submission has been received successfully.\n\nApplication ID: ${result.applicationId}\n\nWe will contact you if you are shortlisted.`)
         
-        try {
-          for (let i = 0; i < headshotFiles.length; i++) {
-            const file = headshotFiles[i]
-            
-            // Create FormData for Cloudinary
-            const cloudinaryData = new FormData()
-            cloudinaryData.append('file', file)
-            cloudinaryData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET)
-            cloudinaryData.append('folder', 'auditions') // Organize in auditions folder
-            
-            // Upload to Cloudinary
-            let response = await fetch(CLOUDINARY_UPLOAD_URL, {
-              method: 'POST',
-              body: cloudinaryData
-            })
-            
-            // If custom preset fails, try with default preset
-            if (!response.ok && CLOUDINARY_UPLOAD_PRESET === 'audition_photos') {
-              const fallbackData = new FormData()
-              fallbackData.append('file', file)
-              fallbackData.append('upload_preset', 'ml_default') // Default unsigned preset
-              fallbackData.append('folder', 'auditions')
-              
-              response = await fetch(CLOUDINARY_UPLOAD_URL, {
-                method: 'POST',
-                body: fallbackData
-              })
-            }
-            
-            if (response.ok) {
-              const result = await response.json()
-              photoUrls.push({
-                name: file.name,
-                url: result.secure_url,
-                publicId: result.public_id,
-                size: (file.size / 1024 / 1024).toFixed(2)
-              })
-            } else {
-              throw new Error('Failed to upload photo')
-            }
-          }
-          
-          // Create photo info with actual URLs and HTML formatting
-          photoInfo = `📷 ${photoUrls.length} PHOTO(S) UPLOADED:
-
-${photoUrls.map((photo, index) => `${index + 1}. ${photo.name} (${photo.size} MB)
-🔗 View Photo: ${photo.url}
-`).join('\n')}
-
-✅ Click the links above to view the actual photos!
-📱 You can also WhatsApp: ${formData.get('phone')} for direct contact.`
-
-          // Create HTML photo previews for email
-          photoHtml = photoUrls.map((photo, index) => `
-            <div class="photo-preview">
-              <div class="photo-name">${index + 1}. ${photo.name}</div>
-              <div class="photo-size">File Size: ${photo.size} MB</div>
-              <img src="${photo.url}" alt="${photo.name}" style="max-width: 100%; height: auto; max-height: 300px; border-radius: 6px; border: 2px solid rgba(255, 255, 255, 0.3); display: block; margin: 10px auto;">
-              <a href="${photo.url}" class="photo-link" target="_blank">🔗 Open Full Size</a>
-            </div>
-          `).join('')
-          
-        } catch (error) {
-          console.error('Photo upload error:', error)
-          // Fallback to contact method
-          const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-          const applicantName = formData.get('fullName') || 'Unknown'
-          const applicationId = `${applicantName.replace(/\s+/g, '-')}-${timestamp}`
-          
-          photoInfo = `⚠️ PHOTO UPLOAD FAILED: ${headshotFiles[0].name} (${(headshotFiles[0].size / 1024 / 1024).toFixed(2)} MB)
-
-📱 TO GET PHOTO: WhatsApp ${formData.get('phone')}
-📧 OR EMAIL: ${formData.get('email')}
-🔖 REFERENCE: ${applicationId}
-
-Ask applicant to resend photos directly.`
-        }
-        
-        submitButton.textContent = 'SENDING EMAIL...'
+        // Reset form
+        e.target.reset()
+      } else {
+        throw new Error(result.error || 'Submission failed')
       }
-      
-      // EmailJS Configuration
-      const EMAILJS_SERVICE_ID = 'service_e0d2vqv'
-      const EMAILJS_TEMPLATE_ID = 'template_ycmn1jg'
-      const EMAILJS_PUBLIC_KEY = 'fqOBYDBIcQMWMF3Ut'
-      
-      // Prepare email data
-      const phoneNumber = formData.get('phone')
-      const cleanPhone = phoneNumber ? phoneNumber.replace(/[^\d]/g, '') : ''
-      
-      const templateParams = {
-        to_name: 'Trihari Universal',
-        from_name: 'Trihari Universal Website', 
-        full_name: formData.get('fullName'),
-        email: formData.get('email'),
-        phone: formData.get('phone'),
-        phone_clean: cleanPhone,
-        city: formData.get('city'),
-        age: formData.get('age') || 'Not provided',
-        date_of_birth: formData.get('dob') || 'Not provided',
-        gender: formData.get('gender') || 'Not specified',
-        experience: formData.get('experience') || '0',
-        skills: formData.get('skills') || 'Not specified',
-        instagram: formData.get('instagram') || '',
-        portfolio: formData.get('portfolio') || '',
-        about_yourself: formData.get('aboutYourself') || '',
-        consent: formData.get('consent') ? '✅ Yes - Terms accepted' : '❌ No consent provided',
-        photo_info: photoInfo,
-        photo_html: photoHtml,
-        application_date: new Date().toLocaleDateString('en-IN', { 
-          weekday: 'long', 
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric' 
-        }),
-        application_time: new Date().toLocaleTimeString('en-IN', { 
-          hour: '2-digit', 
-          minute: '2-digit',
-          hour12: true 
-        }),
-        reply_to: formData.get('email'),
-        subject: `🎬 New Audition Application: ${formData.get('fullName')} from ${formData.get('city')}`
-      }
-      
-      // Prepare data for Google Sheets
-      const sheetsData = {
-        fullName: formData.get('fullName'),
-        email: formData.get('email'),
-        phone: formData.get('phone'),
-        city: formData.get('city'),
-        age: formData.get('age') || '',
-        dob: formData.get('dob') || '',
-        gender: formData.get('gender') || '',
-        experience: formData.get('experience') || '',
-        skills: formData.get('skills') || '',
-        instagram: formData.get('instagram') || '',
-        portfolio: formData.get('portfolio') || '',
-        aboutYourself: formData.get('aboutYourself') || '',
-        consent: formData.get('consent') || false,
-        photoUrl: photoInfo || 'No photo uploaded'
-      }
-
-      // Submit to both services (parallel execution)
-      const emailPromise = emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        templateParams,
-        EMAILJS_PUBLIC_KEY
-      )
-
-      const sheetsPromise = GoogleSheetsService.submitToSheets(sheetsData)
-
-      // Wait for both to complete
-      const [emailResult, sheetsResult] = await Promise.allSettled([emailPromise, sheetsPromise])
-
-      // Determine success message
-      const emailSuccess = emailResult.status === 'fulfilled'
-      const sheetsSuccess = sheetsResult.status === 'fulfilled' && sheetsResult.value?.success
-
-      let successMessage = `🎬 Thank you ${formData.get('fullName')}! Your audition application has been processed.
-
-📧 Email: ${emailSuccess ? '✅ Sent successfully' : '❌ Failed to send'}
-📊 Database: ${sheetsSuccess ? '✅ Saved to spreadsheet' : '⚠️ Email sent (spreadsheet not configured)'}
-
-We've received your application and will contact you if shortlisted.
-
-${headshotFiles && headshotFiles.length > 0 && headshotFiles[0].size > 0 ? `📱 We may WhatsApp you at ${formData.get('phone')} to request your photos.` : ''}
-
-Good luck! 🌟`
-
-      // Handle specific error cases
-      if (!emailSuccess && sheetsSuccess) {
-        successMessage = `⚠️ Your application was saved to our database, but the email failed to send. We have your information and will contact you if shortlisted.
-
-Error: ${emailResult.reason?.message || 'Email service unavailable'}`
-      } else if (!emailSuccess && !sheetsSuccess) {
-        throw new Error('Both email and database submission failed. Please try again.')
-      }
-
-      alert(successMessage)
-      
-      // Reset form
-      e.target.reset()
       
     } catch (error) {
       console.error('Form submission error:', error)
-      alert(`❌ There was an error submitting your application: ${error.message || 'Please check the console for details.'}`)
+      alert('❌ Sorry, there was an error sending your application. Please try again or contact us directly.')
     } finally {
       // Reset button state
-      submitButton.textContent = originalText
+      const submitButton = e.target.querySelector('button[type="submit"]')
+      submitButton.textContent = 'SUBMIT APPLICATION'
       submitButton.disabled = false
     }
   }
 
   const services = [
     {title: 'Film Production', desc: 'End-to-end feature & short film production.'},
-    {title: 'Commercials & Ads', desc: 'High-impact ad films and branded content.'}
+    {title: 'Commercials & Ads', desc: 'High-impact ad films and branded content.'},
+    {title: 'Post Production', desc: 'Editing, color grading, VFX and sound design.'},
+    {title: 'Music & Sound', desc: 'Original score, mixing and sound supervision.'}
   ]
 
   // Featured projects (includes Instagram highlights)
@@ -423,27 +108,21 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
     })),
     // Existing placeholders
     { title: 'Corporate Documentary', category: 'Film', desc: 'Award-winning documentary series' },
-    { title: 'Short Film', category: 'Film', desc: 'Festival-selected narrative film' }
+    { title: 'Brand Campaign', category: 'Commercial', desc: 'Multi-platform advertising campaign' },
+    { title: 'Music Video', category: 'Music', desc: 'Cinematic music video production' },
+    { title: 'Product Launch', category: 'Commercial', desc: 'High-end product showcase' },
+    { title: 'Short Film', category: 'Film', desc: 'Festival-selected narrative film' },
+    { title: 'Event Coverage', category: 'Documentary', desc: 'Live event documentation' }
   ]
 
-  // Clear error styling function
-  const clearFieldError = (e) => {
-    if (e.target.value.trim()) {
-      e.target.style.borderColor = ''
-      e.target.style.boxShadow = ''
-      const errorMsg = e.target.parentNode.querySelector('.error-message')
-      if (errorMsg) errorMsg.remove()
-    }
-  }
-
   // Shared input styles for the audition form
-  const inputStyle = `${dark ? 'bg-gray-800/70 border-gray-700 text-white placeholder-white/40' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} w-full px-3 sm:px-4 py-2.5 sm:py-3.5 rounded-md border focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors text-sm sm:text-base`;
-  const selectStyle = `${dark ? 'bg-gray-800/70 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'} w-full px-3 sm:px-4 py-2.5 sm:py-3.5 rounded-md border focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm sm:text-base`;
+  const inputStyle = `${dark ? 'bg-gray-800/70 border-gray-700 text-white placeholder-white/40' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} w-full px-4 py-3.5 rounded-md border focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors`;
+  const selectStyle = `${dark ? 'bg-gray-800/70 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'} w-full px-4 py-3.5 rounded-md border focus:ring-2 focus:ring-red-500 focus:border-transparent`;
 
   return (
     <div 
       ref={containerRef}
-      className={`min-h-screen w-full max-w-[100vw] ${dark ? 'bg-black text-white' : 'bg-white text-gray-900'} transition-colors duration-300 relative overflow-x-hidden`}
+      className={`min-h-screen ${dark ? 'bg-black text-white' : 'bg-white text-gray-900'} transition-colors duration-300 relative overflow-hidden`}
     >
       {/* Dynamic Mouse-Following Background */}
       <motion.div
@@ -574,66 +253,50 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
 
       {/* NAV */}
       <motion.header 
-        className="w-full mx-auto px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6 flex items-center justify-between relative z-50 backdrop-blur-sm"
+        className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between relative z-50 backdrop-blur-sm"
         style={{ y }}
       >
         <motion.div 
-          className="flex items-center gap-2 sm:gap-4 flex-shrink-0"
+          className="flex items-center gap-4"
           whileHover={{ scale: 1.05 }}
           transition={{ type: "spring", stiffness: 400, damping: 10 }}
         >
           <motion.img 
             src={logo} 
             alt="Trihari Universal" 
-            className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 object-contain rounded-full flex-shrink-0"
+            className="h-12 w-12 object-contain rounded-full"
             whileHover={{ rotate: 360 }}
             transition={{ duration: 0.6 }}
           />
-          <span className="hidden sm:inline-block font-semibold tracking-wide text-sm sm:text-base">Trihari Universal</span>
+          <span className="hidden sm:inline-block font-semibold tracking-wide">Trihari Universal</span>
         </motion.div>
-        <nav className="flex items-center gap-1 sm:gap-2 md:gap-6 flex-shrink-0">
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6">
-            {['Work', 'Services', 'About', 'Audition', 'Contact'].map((item, i) => (
-              <motion.a 
-                key={item}
-                href={`#${item.toLowerCase()}`} 
-                className="hover:text-red-500 transition-colors duration-300 relative"
-                whileHover={{ y: -2 }}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-              >
-                {item}
-                <motion.div
-                  className="absolute bottom-0 left-0 w-full h-0.5 bg-red-500 origin-left"
-                  initial={{ scaleX: 0 }}
-                  whileHover={{ scaleX: 1 }}
-                  transition={{ duration: 0.3 }}
-                />
-              </motion.a>
-            ))}
-          </div>
-
-          {/* Mobile Navigation - Simplified */}
-          <div className="flex md:hidden items-center gap-1 text-xs sm:text-sm">
-            <a href="#audition" className="bg-red-500 text-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-md font-medium whitespace-nowrap">
-              Apply
-            </a>
-            <a href="#work" className="px-1 sm:px-2 py-1 sm:py-1.5 rounded-md whitespace-nowrap">
-              Work
-            </a>
-            <a href="#contact" className="px-1 sm:px-2 py-1 sm:py-1.5 rounded-md whitespace-nowrap">
-              Contact
-            </a>
-          </div>
+        <nav className="flex items-center gap-6">
+          {['Work', 'Services', 'About', 'Audition', 'Contact'].map((item, i) => (
+            <motion.a 
+              key={item}
+              href={`#${item.toLowerCase()}`} 
+              className="hover:text-red-500 transition-colors duration-300 relative"
+              whileHover={{ y: -2 }}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+            >
+              {item}
+              <motion.div
+                className="absolute bottom-0 left-0 w-full h-0.5 bg-red-500 origin-left"
+                initial={{ scaleX: 0 }}
+                whileHover={{ scaleX: 1 }}
+                transition={{ duration: 0.3 }}
+              />
+            </motion.a>
+          ))}
           <motion.button 
             onClick={()=>setDark(!dark)} 
-            className="px-3 py-1 border rounded-md text-sm hover:bg-red-500 hover:border-red-500 transition-all duration-300"
+            className="ml-2 px-3 py-1 border rounded-md text-sm hover:bg-red-500 hover:border-red-500 transition-all duration-300"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            {dark ? '☀️' : '🌙'}
+            {dark ? 'Light' : 'Dark'}
           </motion.button>
         </nav>
       </motion.header>
@@ -641,7 +304,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
       {/* HERO */}
       <motion.section 
         ref={heroRef}
-        className="relative overflow-hidden min-h-[100vh] sm:min-h-screen flex items-center w-full"
+        className="relative overflow-hidden min-h-screen flex items-center"
         style={{
           background: dark 
             ? 'linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(20, 20, 20, 0.9) 50%, rgba(0, 0, 0, 0.95) 100%)'
@@ -655,208 +318,81 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500/50 to-transparent"></div>
         <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500/50 to-transparent"></div>
         
-        <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-6 sm:py-8 md:py-12 lg:py-20 relative z-20">
-          
-          {/* Mobile: Coming Soon Banner First */}
-          <motion.div 
-            className="block md:hidden mb-6 sm:mb-8"
-            initial={{ opacity: 0, y: 20 }}
+        <div className="max-w-6xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-2 items-center gap-10 relative z-20">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
             animate={heroInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
           >
-            <motion.div 
-              className="aspect-video rounded-lg overflow-hidden shadow-2xl bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center relative group border border-gray-700/30 w-full"
-              whileHover={{ 
-                scale: 1.02,
-                boxShadow: "0 25px 50px rgba(0, 0, 0, 0.5)"
-              }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            <motion.h1 
+              className="text-4xl md:text-6xl font-extrabold leading-tight"
+              initial={{ opacity: 0 }}
+              animate={heroInView ? { opacity: 1 } : {}}
+              transition={{ duration: 1.5, delay: 0.3 }}
             >
-              {/* Coming Soon Content */}
-              <div className="text-center relative z-10">
-                {/* Trihari Universal Logo */}
+              Cinematic stories. 
+              <motion.span 
+                className="text-red-500 block mt-2"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={heroInView ? { opacity: 1, scale: 1 } : {}}
+                transition={{ duration: 1, delay: 0.8 }}
+              >
+                Bold visuals.
+              </motion.span>
+            </motion.h1>
+            
+            <motion.p 
+              className="mt-6 max-w-xl text-lg opacity-80 leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              animate={heroInView ? { opacity: 0.8, y: 0 } : {}}
+              transition={{ duration: 1, delay: 1 }}
+            >
+              Trihari Universal — a full-service production house crafting films, commercials and branded content with cinematic scale and storytelling edge.
+            </motion.p>
+            
+            <motion.div 
+              className="mt-8 flex gap-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={heroInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, delay: 1.3 }}
+            >
+              <motion.a 
+                href="#work" 
+                className="inline-block bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-sm font-medium relative overflow-hidden group tracking-wide"
+                whileHover={{ scale: 1.02, boxShadow: "0 10px 25px rgba(239, 68, 68, 0.3)" }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              >
+                <span className="relative z-10">VIEW WORK</span>
                 <motion.div 
-                  className="mb-3 sm:mb-4"
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={heroInView ? { scale: 1, opacity: 1 } : {}}
-                  transition={{ duration: 1.2, delay: 0.6 }}
-                >
-                  <motion.img 
-                    src={logo} 
-                    alt="Trihari Universal Logo" 
-                    className="h-10 w-10 sm:h-12 sm:w-12 object-contain mx-auto opacity-90 rounded-full"
-                    animate={{ 
-                      rotate: [0, 360]
-                    }}
-                    transition={{ 
-                      rotate: { duration: 20, repeat: Infinity, ease: "linear" }
-                    }}
-                    whileHover={{ scale: 1.1 }}
-                  />
-                </motion.div>
-
-                <motion.h3 
-                  className="text-xl sm:text-2xl font-black tracking-wider mb-1 text-white"
-                  style={{
-                    textShadow: '0 0 20px rgba(59, 130, 246, 0.5)'
-                  }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={heroInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.8, delay: 0.8 }}
-                >
-                  COMING
-                </motion.h3>
-                
-                <motion.h3 
-                  className="text-xl sm:text-2xl font-black tracking-wider mb-3 text-blue-400"
-                  style={{
-                    textShadow: '0 0 20px rgba(59, 130, 246, 0.6)'
-                  }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={heroInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.8, delay: 1.0 }}
-                >
-                  SOON
-                </motion.h3>
-                
-                <motion.div 
-                  className="flex items-center justify-center gap-1 sm:gap-2 mb-2 sm:mb-3"
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={heroInView ? { opacity: 1, scale: 1 } : {}}
-                  transition={{ duration: 0.8, delay: 1.2 }}
-                >
-                  <div className="h-px bg-blue-500/60 flex-1 max-w-8 sm:max-w-12"></div>
-                  <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-blue-400/80 font-medium px-1">
-                    Feature Film
-                  </span>
-                  <div className="h-px bg-blue-500/60 flex-1 max-w-8 sm:max-w-12"></div>
-                </motion.div>
-                
-                <motion.p 
-                  className="text-xs sm:text-sm text-blue-300/70 font-medium"
-                  initial={{ opacity: 0 }}
-                  animate={heroInView ? { opacity: 1 } : {}}
-                  transition={{ duration: 0.8, delay: 1.4 }}
-                >
-                  Next Production
-                </motion.p>
-              </div>
+                  className="absolute inset-0 bg-gradient-to-r from-red-500 to-red-800"
+                  initial={{ x: '-100%' }}
+                  whileHover={{ x: '0%' }}
+                  transition={{ duration: 0.3 }}
+                />
+              </motion.a>
               
-              {/* Subtle Cinematic Glow */}
-              <motion.div 
-                className="absolute inset-0 bg-gradient-to-t from-blue-900/20 via-transparent to-transparent rounded-lg"
-                animate={{ 
-                  opacity: [0.3, 0.5, 0.3]
-                }}
-                transition={{ 
-                  duration: 4, 
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-              
-              {/* Film Scanlines */}
-              <div className="absolute inset-0 opacity-5 rounded-lg" style={{
-                backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(59,130,246,0.1) 2px, rgba(59,130,246,0.1) 4px)'
-              }}></div>
-              
-              {/* Elegant Corner Frames - Mobile Simplified */}
-              <div className="absolute top-2 left-2">
-                <div className="w-4 h-px bg-gradient-to-r from-blue-400/60 to-transparent"></div>
-                <div className="w-px h-4 bg-gradient-to-b from-blue-400/60 to-transparent"></div>
-              </div>
-              <div className="absolute top-2 right-2">
-                <div className="w-4 h-px bg-gradient-to-l from-blue-400/60 to-transparent ml-auto"></div>
-                <div className="w-px h-4 bg-gradient-to-b from-blue-400/60 to-transparent ml-auto"></div>
-              </div>
-              <div className="absolute bottom-2 left-2">
-                <div className="w-px h-4 bg-gradient-to-t from-blue-400/60 to-transparent mb-auto"></div>
-                <div className="w-4 h-px bg-gradient-to-r from-blue-400/60 to-transparent"></div>
-              </div>
-              <div className="absolute bottom-2 right-2">
-                <div className="w-px h-4 bg-gradient-to-t from-blue-400/60 to-transparent ml-auto mb-auto"></div>
-                <div className="w-4 h-px bg-gradient-to-l from-blue-400/60 to-transparent ml-auto"></div>
-              </div>
+              <motion.a 
+                href="#audition" 
+                className={`inline-block ${dark ? 'border-white/20 hover:border-red-500 hover:text-red-500' : 'border-gray-900/20 hover:border-red-500 hover:text-red-500'} border-2 px-8 py-4 rounded-sm font-medium tracking-wide transition-all duration-300`}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              >
+                APPLY FOR AUDITION
+              </motion.a>
             </motion.div>
           </motion.div>
 
-          {/* Desktop Grid Layout */}
-          <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-4 sm:gap-6 md:gap-10">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={heroInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 1.2, ease: "easeOut" }}
-            >
-              <motion.h1 
-                className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-6xl font-extrabold leading-tight"
-                initial={{ opacity: 0 }}
-                animate={heroInView ? { opacity: 1 } : {}}
-                transition={{ duration: 1.5, delay: 0.3 }}
-              >
-                Cinematic stories. 
-                <motion.span 
-                  className="text-red-500 block mt-1 sm:mt-2"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={heroInView ? { opacity: 1, scale: 1 } : {}}
-                  transition={{ duration: 1, delay: 0.8 }}
-                >
-                  Bold visuals.
-                </motion.span>
-              </motion.h1>
-            
-              <motion.p 
-                className="mt-3 sm:mt-4 md:mt-6 max-w-xl text-sm sm:text-base md:text-lg opacity-80 leading-relaxed"
-                initial={{ opacity: 0, y: 20 }}
-                animate={heroInView ? { opacity: 0.8, y: 0 } : {}}
-                transition={{ duration: 1, delay: 1 }}
-              >
-                Trihari Universal — a full-service production house crafting films, commercials and branded content with cinematic scale and storytelling edge.
-              </motion.p>
-              
-              <motion.div 
-                className="mt-4 sm:mt-6 md:mt-8 flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={heroInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.8, delay: 1.3 }}
-              >
-                <motion.a 
-                  href="#work" 
-                  className="inline-block bg-red-600 hover:bg-red-700 text-white px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 rounded-sm font-medium relative overflow-hidden group tracking-wide text-center text-sm sm:text-base"
-                  whileHover={{ scale: 1.02, boxShadow: "0 10px 25px rgba(239, 68, 68, 0.3)" }}
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                >
-                  <span className="relative z-10">VIEW WORK</span>
-                  <motion.div 
-                    className="absolute inset-0 bg-gradient-to-r from-red-500 to-red-800"
-                    initial={{ x: '-100%' }}
-                    whileHover={{ x: '0%' }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </motion.a>
-                
-                <motion.a 
-                  href="#audition" 
-                  className={`inline-block ${dark ? 'border-white/20 hover:border-red-500 hover:text-red-500' : 'border-gray-900/20 hover:border-red-500 hover:text-red-500'} border-2 px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 rounded-sm font-medium tracking-wide transition-all duration-300 text-center text-sm sm:text-base`}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                >
-                  APPLY FOR AUDITION
-                </motion.a>
-              </motion.div>
-            </motion.div>
-
-            {/* Desktop: Coming Soon Banner */}
+          <motion.div 
+            className="relative"
+            initial={{ opacity: 0, x: 30 }}
+            animate={heroInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 1.2, delay: 0.4, ease: "easeOut" }}
+            style={{ y: useTransform(scrollYProgress, [0, 0.5], [0, 50]) }}
+          >
             <motion.div 
-              className="relative hidden md:block"
-              initial={{ opacity: 0, x: 30 }}
-              animate={heroInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 1.2, delay: 0.4, ease: "easeOut" }}
-              style={{ y: useTransform(scrollYProgress, [0, 0.5], [0, 50]) }}
-            >
-            <motion.div 
-              className="aspect-video rounded-lg sm:rounded-xl overflow-hidden shadow-2xl bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center relative group border border-gray-700/30 w-full"
+              className="aspect-video rounded-xl overflow-hidden shadow-2xl bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center relative group border border-gray-700/30"
               whileHover={{ 
                 scale: 1.02,
                 boxShadow: "0 25px 50px rgba(0, 0, 0, 0.5)"
@@ -867,7 +403,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
               <div className="text-center relative z-10">
                 {/* Trihari Universal Logo */}
                 <motion.div 
-                  className="mb-4 sm:mb-6"
+                  className="mb-6"
                   initial={{ scale: 0, opacity: 0 }}
                   animate={heroInView ? { scale: 1, opacity: 1 } : {}}
                   transition={{ duration: 1.2, delay: 0.6 }}
@@ -875,7 +411,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                   <motion.img 
                     src={logo} 
                     alt="Trihari Universal Logo" 
-                    className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 object-contain mx-auto opacity-90 rounded-full"
+                    className="h-16 w-16 object-contain mx-auto opacity-90 rounded-full"
                     animate={{ 
                       rotate: [0, 360]
                     }}
@@ -887,7 +423,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                 </motion.div>
 
                 <motion.h3 
-                  className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-wider mb-2 text-white"
+                  className="text-4xl md:text-5xl font-black tracking-wider mb-2 text-white"
                   style={{
                     textShadow: '0 0 20px rgba(59, 130, 246, 0.5)'
                   }}
@@ -899,7 +435,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                 </motion.h3>
                 
                 <motion.h3 
-                  className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-wider mb-4 sm:mb-6 text-blue-400"
+                  className="text-4xl md:text-5xl font-black tracking-wider mb-6 text-blue-400"
                   style={{
                     textShadow: '0 0 20px rgba(59, 130, 246, 0.6)'
                   }}
@@ -911,16 +447,16 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                 </motion.h3>
                 
                 <motion.div 
-                  className="flex items-center justify-center gap-2 sm:gap-4 mb-3 sm:mb-4"
+                  className="flex items-center justify-center gap-4 mb-4"
                   initial={{ opacity: 0, scale: 0.5 }}
                   animate={heroInView ? { opacity: 1, scale: 1 } : {}}
                   transition={{ duration: 0.8, delay: 1.2 }}
                 >
-                  <div className="h-px bg-blue-500/60 flex-1 max-w-12 sm:max-w-16"></div>
-                  <span className="text-[10px] sm:text-xs uppercase tracking-widest text-blue-400/80 font-medium px-2">
+                  <div className="h-px bg-blue-500/60 flex-1 max-w-16"></div>
+                  <span className="text-xs uppercase tracking-widest text-blue-400/80 font-medium">
                     Feature Film
                   </span>
-                  <div className="h-px bg-blue-500/60 flex-1 max-w-12 sm:max-w-16"></div>
+                  <div className="h-px bg-blue-500/60 flex-1 max-w-16"></div>
                 </motion.div>
                 
                 <motion.p 
@@ -969,68 +505,37 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                 <div className="w-6 h-px bg-gradient-to-l from-blue-400/60 to-transparent ml-auto"></div>
               </div>
             </motion.div>
-            </motion.div>
-          </div>
+          </motion.div>
         </div>
       </motion.section>
 
-      {/* Section Divider */}
-      <SectionDivider />
-
       {/* WORK SECTION */}
-      <section 
+      <motion.section 
         id="work" 
-        className="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-12 sm:py-16 md:py-20"
+        className="max-w-7xl mx-auto px-6 py-20"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
       >
-        <div 
-          style={{ 
-            transition: 'none !important', 
-            animation: 'none !important', 
-            transform: 'none !important',
-            position: 'static',
-            zIndex: 'auto',
-            isolation: 'isolate'
-          }}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
         >
-          <h3 
-            style={{ 
-              transition: 'none !important', 
-              animation: 'none !important', 
-              transform: 'none !important',
-              color: dark ? '#ffffff' : '#111827',
-              opacity: '0.7',
-              fontSize: '0.875rem',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              fontWeight: 'normal',
-              margin: '0',
-              padding: '0',
-              position: 'static'
-            }}
-          >
-            Our Portfolio
-          </h3>
-          <h2 
-            style={{ 
-              transition: 'none !important', 
-              animation: 'none !important', 
-              transform: 'none !important',
-              color: dark ? '#ffffff' : '#111827',
-              fontSize: 'clamp(1.875rem, 4vw, 2.25rem)',
-              fontWeight: '700',
-              margin: '0.5rem 0 2rem 0',
-              padding: '0',
-              position: 'static'
-            }}
-          >
-            Featured Work
-          </h2>
-        </div>
+          <h3 className="text-sm uppercase opacity-70 tracking-wider">Our Portfolio</h3>
+          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-8">Featured Work</h2>
+        </motion.div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {[
             { title: 'Corporate Documentary', category: 'Film', desc: 'Award-winning documentary series' },
-            { title: 'Short Film', category: 'Film', desc: 'Festival-selected narrative film' }
+            { title: 'Brand Campaign', category: 'Commercial', desc: 'Multi-platform advertising campaign' },
+            { title: 'Music Video', category: 'Music', desc: 'Cinematic music video production' },
+            { title: 'Product Launch', category: 'Commercial', desc: 'High-end product showcase' },
+            { title: 'Short Film', category: 'Film', desc: 'Festival-selected narrative film' },
+            { title: 'Event Coverage', category: 'Documentary', desc: 'Live event documentation' }
           ].map((project, i) => (
             <motion.div
               key={i}
@@ -1056,16 +561,13 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
             </motion.div>
           ))}
         </div>
-      </section>
-
-      {/* Section Divider */}
-      <SectionDivider />
+      </motion.section>
 
       {/* SERVICES */}
       <motion.section 
         id="services" 
         ref={servicesRef}
-        className="relative py-16 sm:py-24 overflow-hidden"
+        className="relative py-20 overflow-hidden"
         style={{
           background: dark 
             ? 'linear-gradient(135deg, rgba(5, 5, 5, 0.98) 0%, rgba(15, 15, 15, 0.95) 50%, rgba(5, 5, 5, 0.98) 100%)'
@@ -1108,13 +610,13 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
           ))}
         </div>
 
-        <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 relative z-10">
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
           {/* Enhanced Header */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={servicesInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8 }}
-            className="text-center mb-12 sm:mb-16"
+            className="text-center mb-16"
           >
             <motion.div
               className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] mb-4 px-4 py-2 rounded-sm bg-white/5 border border-white/10 backdrop-blur-sm"
@@ -1161,7 +663,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
           </motion.div>
 
           {/* Enhanced Service Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto justify-items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {services.map((s, i) => (
               <motion.div 
                 key={i} 
@@ -1325,13 +827,10 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
         </div>
       </motion.section>
 
-      {/* Section Divider */}
-      <SectionDivider />
-
       {/* ABOUT SECTION */}
       <motion.section 
         id="about" 
-        className="relative py-16 sm:py-24 overflow-hidden"
+        className="relative py-20 overflow-hidden"
         style={{
           background: dark 
             ? 'linear-gradient(135deg, rgba(15, 15, 15, 0.95) 0%, rgba(25, 25, 25, 0.9) 50%, rgba(15, 15, 15, 0.95) 100%)'
@@ -1516,44 +1015,41 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
         </div>
       </motion.section>
 
-      {/* Section Divider */}
-      <SectionDivider />
-
       {/* AUDITION FORM SECTION */}
       <motion.section 
         id="audition" 
-        className="relative py-16 sm:py-24 overflow-hidden"
+        className="relative py-20 overflow-hidden"
         style={{
           background: dark 
             ? 'linear-gradient(135deg, rgba(15, 15, 15, 0.95) 0%, rgba(25, 25, 25, 0.9) 50%, rgba(15, 15, 15, 0.95) 100%)'
             : 'linear-gradient(135deg, rgba(250, 250, 250, 0.95) 0%, rgba(240, 240, 240, 0.9) 50%, rgba(250, 250, 250, 0.95) 100%)'
         }}
       >
-        <div className="w-full max-w-4xl mx-auto px-3 sm:px-4 md:px-6">
+        <div className="max-w-4xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-center mb-8 sm:mb-12"
+            className="text-center mb-12"
           >
             <h3 className="text-sm uppercase opacity-70 tracking-wider">Join Our Team</h3>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mt-2 mb-4 sm:mb-6">Apply For Audition</h2>
-            <p className="text-base sm:text-lg opacity-80 max-w-2xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-6">Apply For Audition</h2>
+            <p className="text-lg opacity-80 max-w-2xl mx-auto">
               Showcase your talent and become part of our creative journey. Submit your portfolio and details below.
             </p>
           </motion.div>
 
           {/* Audition Banner */}
           <motion.div
-            className="mb-6 sm:mb-8 md:mb-10"
+            className="mb-10"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
             <motion.div
-              className="aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-gray-950 via-black to-gray-900 flex items-center justify-center relative border border-blue-500/20 w-full"
+              className="aspect-[21/9] rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-gray-950 via-black to-gray-900 flex items-center justify-center relative border border-blue-500/20"
               whileHover={{ scale: 1.01 }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
               style={{
@@ -1561,10 +1057,10 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
               }}
             >
               {/* Content */}
-              <div className="relative z-10 text-center px-2 sm:px-3 md:px-4 lg:px-6 py-2 sm:py-3 md:py-4">
+              <div className="relative z-10 text-center px-6">
                 {/* Trihari Universal Logo */}
                 <motion.div 
-                  className="mb-3 sm:mb-4"
+                  className="mb-4"
                   initial={{ scale: 0, opacity: 0 }}
                   whileInView={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 1.0, delay: 0.3 }}
@@ -1573,7 +1069,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                   <motion.img 
                     src={logo} 
                     alt="Trihari Universal Logo" 
-                    className="h-10 w-10 sm:h-12 sm:w-12 object-contain mx-auto opacity-80 rounded-full ring-1 ring-blue-400/30"
+                    className="h-12 w-12 object-contain mx-auto opacity-80 rounded-full ring-1 ring-blue-400/30"
                     animate={{ 
                       rotate: [0, 360]
                     }}
@@ -1589,7 +1085,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                   whileInView={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.7 }}
                   viewport={{ once: true }}
-                  className="inline-flex items-center gap-0.5 sm:gap-1 md:gap-2 bg-blue-500/10 text-blue-300/90 border border-blue-400/30 px-1.5 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-1.5 rounded-sm text-[8px] sm:text-[10px] md:text-xs uppercase tracking-[0.05em] sm:tracking-[0.1em] md:tracking-[0.2em] backdrop-blur-sm mb-1 sm:mb-2 md:mb-3"
+                  className="inline-flex items-center gap-2 bg-blue-500/10 text-blue-300/90 border border-blue-400/30 px-4 py-1.5 rounded-sm text-xs uppercase tracking-[0.2em] backdrop-blur-sm mb-3"
                   style={{
                     boxShadow: '0 0 20px rgba(59, 130, 246, 0.2)'
                   }}
@@ -1602,7 +1098,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                 </motion.div>
 
                 <motion.h3 
-                  className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-extrabold tracking-tight mb-1 sm:mb-2 leading-tight"
+                  className="text-2xl md:text-3xl font-extrabold tracking-tight mb-2"
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
@@ -1618,19 +1114,19 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                 </motion.h3>
 
                 <motion.div 
-                  className="flex items-center justify-center gap-1 sm:gap-2 md:gap-3 mb-1 sm:mb-2 md:mb-3"
+                  className="flex items-center justify-center gap-3 mb-3"
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
                   viewport={{ once: true }}
                 >
-                  <div className="h-px bg-gradient-to-r from-blue-500/60 to-transparent w-6 sm:w-10 md:w-16" />
-                  <span className="text-[8px] sm:text-[9px] md:text-[11px] uppercase tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.25em] text-blue-300/70 px-0.5 sm:px-1 whitespace-nowrap">Ready • Set • Action</span>
-                  <div className="h-px bg-gradient-to-l from-blue-500/60 to-transparent w-6 sm:w-10 md:w-16" />
+                  <div className="h-px bg-gradient-to-r from-blue-500/60 to-transparent w-16" />
+                  <span className="text-[11px] uppercase tracking-[0.25em] text-blue-300/70">Ready • Set • Action</span>
+                  <div className="h-px bg-gradient-to-l from-blue-500/60 to-transparent w-16" />
                 </motion.div>
 
                 <motion.p 
-                  className="text-xs sm:text-sm md:text-base text-blue-200/80 mb-2 sm:mb-3 md:mb-4 leading-tight px-1 sm:px-2"
+                  className="text-sm md:text-base text-blue-200/80 mb-4"
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   transition={{ duration: 0.6, delay: 0.6 }}
@@ -1640,7 +1136,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                 </motion.p>
 
                 <motion.div 
-                  className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4"
+                  className="flex items-center justify-center gap-4"
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.8 }}
@@ -1649,7 +1145,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                   {['🎬', '🎭', '🎪'].map((emoji, i) => (
                     <motion.div
                       key={i}
-                      className="text-sm sm:text-base md:text-lg opacity-60"
+                      className="text-lg opacity-60"
                       animate={{
                         scale: [1, 1.1, 1],
                         opacity: [0.6, 0.8, 0.6]
@@ -1766,9 +1262,9 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
             onSubmit={handleFormSubmit}
           >
             {/* BASIC DETAILS */}
-            <div className="mb-6 sm:mb-8">
+            <div className="mb-8">
               <h3 className="text-lg font-semibold mb-4 text-red-500">Basic Details</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium mb-2">Full Name *</label>
                   <input
@@ -1777,8 +1273,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                     required
                     autoComplete="name"
                     placeholder="Enter your full name"
-                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-md border ${dark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'} focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm sm:text-base`}
-                    onInput={clearFieldError}
+                    className={`w-full px-4 py-3 rounded-md border ${dark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'} focus:ring-2 focus:ring-red-500 focus:border-transparent`}
                   />
                 </div>
                 <div>
@@ -1790,7 +1285,6 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                     autoComplete="address-level2"
                     placeholder="Mumbai, Hyderabad, Chennai..."
                     className={`w-full px-4 py-3 rounded-md border ${dark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'} focus:ring-2 focus:ring-red-500 focus:border-transparent`}
-                    onInput={clearFieldError}
                   />
                 </div>
                 <div>
@@ -1802,7 +1296,6 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                     autoComplete="email"
                     placeholder="your.email@example.com"
                     className={`w-full px-4 py-3 rounded-md border ${dark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'} focus:ring-2 focus:ring-red-500 focus:border-transparent`}
-                    onInput={clearFieldError}
                   />
                 </div>
                 <div>
@@ -1814,7 +1307,6 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                     autoComplete="tel"
                     placeholder="+91 92596 09995"
                     className={`w-full px-4 py-3 rounded-md border ${dark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'} focus:ring-2 focus:ring-red-500 focus:border-transparent`}
-                    onInput={clearFieldError}
                   />
                 </div>
                 <div>
@@ -1843,24 +1335,15 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
             </div>
 
             {/* PROFILE */}
-            <div className="mb-6 sm:mb-8">
+            <div className="mb-8">
               <h3 className="text-lg font-semibold mb-4 text-red-500">Profile</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium mb-2">Experience *</label>
                   <select
                     name="experience"
                     required
                     className={`w-full px-4 py-3 rounded-md border ${dark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'} focus:ring-2 focus:ring-red-500 focus:border-transparent`}
-                    onChange={(e) => {
-                      // Clear error styling when user selects
-                      if (e.target.value) {
-                        e.target.style.borderColor = ''
-                        e.target.style.boxShadow = ''
-                        const errorMsg = e.target.parentNode.querySelector('.error-message')
-                        if (errorMsg) errorMsg.remove()
-                      }
-                    }}
                   >
                     <option value="">Select years</option>
                     <option value="0">0 years</option>
@@ -1880,7 +1363,6 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                     required
                     placeholder="Acting, Dancing, Voiceover, Stunts..."
                     className={`w-full px-4 py-3 rounded-md border ${dark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'} focus:ring-2 focus:ring-red-500 focus:border-transparent`}
-                    onInput={clearFieldError}
                   />
                 </div>
                 <div>
@@ -1904,25 +1386,10 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
               </div>
             </div>
 
-            {/* TELL US ABOUT YOURSELF */}
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold mb-4 text-red-500">Tell Us About Yourself</h3>
-              <div>
-                <label className="block text-sm font-medium mb-2">About Yourself</label>
-                <textarea
-                  name="aboutYourself"
-                  rows="4"
-                  placeholder="Tell us about your background, interests, and what makes you unique as a performer..."
-                  className={`w-full px-4 py-3 rounded-md border ${dark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'} focus:ring-2 focus:ring-red-500 focus:border-transparent resize-vertical`}
-                ></textarea>
-                <p className="text-xs opacity-60 mt-2">Optional: Share your story, aspirations, or anything else you'd like us to know.</p>
-              </div>
-            </div>
-
             {/* HEADSHOT / DOCUMENT */}
-            <div className="mb-6 sm:mb-8">
+            <div className="mb-8">
               <h3 className="text-lg font-semibold mb-4 text-red-500">Headshot / Document</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 items-start sm:items-center">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
                 <div>
                   <label className="block text-sm font-medium mb-2">Upload (Image or PDF)</label>
                   <input
@@ -1942,19 +1409,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
             {/* CONSENT */}
             <div className="mb-8">
               <label className="flex items-start gap-3">
-                <input 
-                  type="checkbox" 
-                  name="consent"
-                  required 
-                  className="mt-1" 
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      e.target.parentNode.style.color = ''
-                      const errorMsg = e.target.parentNode.parentNode.querySelector('.error-message')
-                      if (errorMsg) errorMsg.remove()
-                    }
-                  }}
-                />
+                <input type="checkbox" required className="mt-1" />
                 <span className="text-sm">I confirm my details are accurate and consent to be contacted for casting opportunities *</span>
               </label>
             </div>
@@ -1975,13 +1430,10 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
         </div>
       </motion.section>
 
-      {/* Section Divider */}
-      <SectionDivider />
-
       {/* CONTACT SECTION */}
       <motion.section 
         id="contact" 
-        className="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-16 sm:py-20 md:py-24"
+        className="max-w-7xl mx-auto px-6 py-20"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
@@ -1995,7 +1447,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
           className="text-center mb-12"
         >
           <h3 className="text-sm uppercase opacity-70 tracking-wider">Get In Touch</h3>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mt-2 mb-6">Let's Create Together</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-6">Let's Create Together</h2>
           <p className="text-lg opacity-80 max-w-2xl mx-auto">
             Ready to bring your vision to life? Contact us to discuss your next project and discover how we can help tell your story.
           </p>
@@ -2016,16 +1468,40 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="w-28 h-28 md:w-36 md:h-36 rounded-full border-2 border-white/20 flex items-center justify-center relative overflow-hidden group-hover:shadow-xl group-hover:shadow-blue-500/30 transition-all duration-300">
-                {/* Founder Image - Clean and Clear */}
-                <img 
-                  src={founderImage} 
-                  alt="Siddhant Badhani - Founder & Creative Director" 
-                  className="w-full h-full object-cover rounded-full group-hover:scale-105 transition-transform duration-300"
+              <div className="w-28 h-28 md:w-36 md:h-36 rounded-full bg-gradient-to-br from-blue-500/20 via-gray-600/30 to-blue-600/20 border-2 border-blue-400/30 flex items-center justify-center relative overflow-hidden backdrop-blur-sm group-hover:shadow-2xl group-hover:shadow-blue-500/40 transition-all duration-300">
+                {/* Placeholder content */}
+                <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-blue-400/40 to-blue-600/40 flex items-center justify-center">
+                  <span className="text-3xl md:text-4xl opacity-70">👤</span>
+                </div>
+                
+                {/* Animated border */}
+                <motion.div 
+                  className="absolute inset-0 rounded-full border-2 border-blue-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  animate={{
+                    rotate: [0, 360]
+                  }}
+                  transition={{
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
                 />
                 
-                {/* Simple subtle border on hover */}
-                <div className="absolute inset-0 rounded-full border-2 border-blue-400/0 group-hover:border-blue-400/60 transition-all duration-300" />
+                {/* Enhanced glow effect */}
+                <div className="absolute inset-0 rounded-full bg-blue-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                
+                {/* Outer glow ring */}
+                <motion.div 
+                  className="absolute -inset-2 rounded-full bg-gradient-to-r from-blue-400/30 via-blue-500/40 to-blue-400/30 opacity-0 group-hover:opacity-60 blur-md transition-opacity duration-500"
+                  animate={{
+                    scale: [1, 1.1, 1],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
               </div>
               
               {/* Founder info */}
@@ -2177,7 +1653,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
         whileInView={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
       >
-        <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4 md:gap-6">
+        <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <motion.div 
             className="flex items-center gap-4"
             whileHover={{ scale: 1.05 }}
@@ -2191,7 +1667,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
             />
             <div className="text-sm opacity-80">© {new Date().getFullYear()} Trihari Universal</div>
           </motion.div>
-          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-center sm:text-left">
+          <div className="flex items-center gap-6">
             {['Privacy', 'Terms'].map((item, i) => (
               <motion.a 
                 key={item}
@@ -2216,9 +1692,6 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
           </div>
         </div>
       </motion.footer>
-
-      {/* Development Test Panel */}
-      <GoogleSheetsTestPanel />
 
     </div>
   )
