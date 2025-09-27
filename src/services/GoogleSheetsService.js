@@ -130,17 +130,36 @@ class GoogleSheetsService {
 
           console.log(`📡 Proxy ${i + 1} response:`, {
             status: response.status,
-            ok: response.ok
+            ok: response.ok,
+            contentType: response.headers.get('content-type')
           })
 
           if (response.ok) {
-            const result = await response.json()
-            console.log(`✅ CORS proxy ${i + 1} successful:`, result)
+            // Get response text first to check what we actually received
+            const responseText = await response.text()
+            console.log(`📄 Proxy ${i + 1} raw response:`, responseText.substring(0, 500))
             
-            return {
-              success: true,
-              message: `Data saved to spreadsheet (proxy ${i + 1})`,
-              rowId: result.rowId || null
+            try {
+              // Try to parse as JSON
+              const result = JSON.parse(responseText)
+              console.log(`✅ CORS proxy ${i + 1} successful:`, result)
+              
+              // Verify it's actually a success response from our Google Apps Script
+              if (result.success === true && result.rowId) {
+                return {
+                  success: true,
+                  message: `Data saved to spreadsheet (proxy ${i + 1})`,
+                  rowId: result.rowId
+                }
+              } else {
+                console.log(`⚠️ Proxy ${i + 1} returned unexpected format:`, result)
+                throw new Error(`Unexpected response format: ${JSON.stringify(result)}`)
+              }
+              
+            } catch (parseError) {
+              console.log(`❌ Proxy ${i + 1} response not valid JSON:`, parseError.message)
+              console.log(`Raw response: ${responseText.substring(0, 200)}...`)
+              throw new Error(`Invalid JSON response: ${parseError.message}`)
             }
           }
           
