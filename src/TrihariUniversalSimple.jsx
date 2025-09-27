@@ -66,6 +66,10 @@ export default function TrihariUniversalSimple(){
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [igPosts, setIgPosts] = useState([])
   
+  // Simple progress popup state
+  const [showProgress, setShowProgress] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
+
   // Animation refs
   const heroRef = useRef(null)
   const servicesRef = useRef(null)
@@ -100,6 +104,67 @@ export default function TrihariUniversalSimple(){
       })
       .catch(() => {/* silent */})
   }, [])
+
+
+
+  // Simple Progress Popup Component
+  const ProgressPopup = () => {
+    if (!showProgress) return null
+
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      >
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="bg-white rounded-xl shadow-2xl p-8 max-w-sm w-full mx-4"
+        >
+          <div className="text-center">
+            {isSubmitted ? (
+              <>
+                {/* Success State */}
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4"
+                >
+                  <motion.svg
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ delay: 0.2, duration: 0.5 }}
+                    className="w-8 h-8 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </motion.svg>
+                </motion.div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Submitted ✓</h3>
+                <p className="text-gray-600">Your application has been submitted successfully!</p>
+              </>
+            ) : (
+              <>
+                {/* Processing State */}
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  className="w-16 h-16 border-4 border-red-200 border-t-red-500 rounded-full mx-auto mb-4"
+                />
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Processing...</h3>
+                <p className="text-gray-600">Please wait while we submit your application.</p>
+              </>
+            )}
+          </div>
+        </motion.div>
+      </motion.div>
+    )
+  }
 
   // Form submission handler with EmailJS
   const handleFormSubmit = async (e) => {
@@ -194,8 +259,12 @@ export default function TrihariUniversalSimple(){
     }
     
     try {
+      // Show progress popup
+      setShowProgress(true)
+      setIsSubmitted(false)
+      
       // Show loading state
-      submitButton.textContent = 'SENDING...'
+      submitButton.textContent = 'PROCESSING...'
       submitButton.disabled = true
       
       // Upload photos to Cloudinary
@@ -210,7 +279,6 @@ export default function TrihariUniversalSimple(){
       const headshotFiles = formData.getAll('headshot')
       
       if (headshotFiles && headshotFiles.length > 0 && headshotFiles[0].size > 0) {
-        submitButton.textContent = 'UPLOADING PHOTOS...'
         
         try {
           for (let i = 0; i < headshotFiles.length; i++) {
@@ -249,6 +317,12 @@ export default function TrihariUniversalSimple(){
                 publicId: result.public_id,
                 size: (file.size / 1024 / 1024).toFixed(2)
               })
+              
+              // Update progress for each photo processed
+              if (i === headshotFiles.length - 1) {
+
+                await new Promise(resolve => setTimeout(resolve, 500))
+              }
             } else {
               throw new Error('Failed to upload photo')
             }
@@ -290,6 +364,7 @@ ${photoUrls.map((photo, index) => `${index + 1}. ${photo.name} (${photo.size} MB
 Ask applicant to resend photos directly.`
         }
         
+
         submitButton.textContent = 'SENDING EMAIL...'
       }
       
@@ -354,6 +429,9 @@ Ask applicant to resend photos directly.`
         photoUrl: photoInfo || 'No photo uploaded'
       }
 
+      // Update progress - submitting data
+
+      
       // Submit to both services (parallel execution)
       const emailPromise = emailjs.send(
         EMAILJS_SERVICE_ID,
@@ -363,6 +441,9 @@ Ask applicant to resend photos directly.`
       )
 
       const sheetsPromise = GoogleSheetsService.submitToSheets(sheetsData)
+
+      // Update progress - processing
+
 
       // Wait for both to complete
       const [emailResult, sheetsResult] = await Promise.allSettled([emailPromise, sheetsPromise])
@@ -391,14 +472,22 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
         throw new Error('Both email and database submission failed. Please try again.')
       }
 
-      alert(successMessage)
+      // Show success state
+      setIsSubmitted(true)
       
-      // Reset form
-      e.target.reset()
+      // Hide progress popup and reset form after success
+      setTimeout(() => {
+        setShowProgress(false)
+        setIsSubmitted(false)
+        e.target.reset()
+      }, 3000)
       
     } catch (error) {
       console.error('Form submission error:', error)
-      alert(`❌ There was an error submitting your application: ${error.message || 'Please check the console for details.'}`)
+      
+      // Hide progress and show error
+      setShowProgress(false)
+      alert(`❌ There was an error submitting your application: ${error.message || 'Please check the console for details.'}}`)
     } finally {
       // Reset button state
       submitButton.textContent = originalText
@@ -572,6 +661,9 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
           />
         ))}
       </div>
+
+      {/* Progress Popup */}
+      {showProgress && <ProgressPopup />}
 
       {/* NAV */}
       <motion.header 

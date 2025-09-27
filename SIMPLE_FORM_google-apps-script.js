@@ -59,6 +59,25 @@ function saveToGoogleSheets(data) {
     
     console.log('Saving data:', data);
     
+    // Extract clean photo URL from the formatted text
+    function extractPhotoUrl(photoUrlText) {
+      if (!photoUrlText) return '';
+      
+      // Look for Cloudinary URL pattern
+      const cloudinaryMatch = photoUrlText.match(/https:\/\/res\.cloudinary\.com\/[^\s\n]+/);
+      if (cloudinaryMatch) {
+        return cloudinaryMatch[0];
+      }
+      
+      // Look for any other https URL
+      const urlMatch = photoUrlText.match(/https:\/\/[^\s\n]+/);
+      if (urlMatch) {
+        return urlMatch[0];
+      }
+      
+      return photoUrlText; // Return as-is if no URL pattern found
+    }
+    
     // Prepare row data (matching your form fields)
     const rowData = [
       timestamp.toISOString(),                    // A: Timestamp
@@ -75,7 +94,7 @@ function saveToGoogleSheets(data) {
       data.portfolio || '',                      // L: Portfolio
       data.aboutYourself || '',                  // M: About Yourself
       data.consent || '',                        // N: Consent
-      data.photoUrl || '',                       // O: Photo URL
+      extractPhotoUrl(data.photoUrl),            // O: Photo URL (cleaned)
       data.submissionDate || timestamp.toLocaleDateString('en-IN'),  // P: Submission Date
       data.submissionTime || timestamp.toLocaleTimeString('en-IN'),  // Q: Submission Time
       data.source || 'Website',                  // R: Source
