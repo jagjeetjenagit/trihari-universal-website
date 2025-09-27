@@ -92,7 +92,8 @@ export default function TrihariUniversalSimple(){
 
   // Fetch latest Instagram posts from a simple JSON manifest in /public
   useEffect(() => {
-    fetch('/instagram-latest.json', { cache: 'no-store' })
+    const instagramPath = import.meta.env.BASE_URL + 'instagram-latest.json'
+    fetch(instagramPath, { cache: 'no-store' })
       .then(r => r.ok ? r.json() : [])
       .then(data => {
         if (Array.isArray(data)) setIgPosts(data.slice(0, 6))
