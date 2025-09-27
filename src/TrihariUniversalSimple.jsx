@@ -427,7 +427,7 @@ export default function TrihariUniversalSimple(){
       let photoHtml = '<div style="color: white !important; padding: 20px; text-align: center;">❌ No photos uploaded</div>'
       
       // Cloudinary configuration - Using environment variables
-      const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dllmmfiba'
+      const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'your_cloud_name'
       const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`
       const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'audition_photos'
       
@@ -533,9 +533,9 @@ Ask applicant to resend photos directly.`
       }
       
       // EmailJS Configuration - Using environment variables
-      const EMAILJS_SERVICE_ID = import.meta.env.REACT_APP_EMAILJS_SERVICE_ID || 'service_boc9xs9'
-      const EMAILJS_TEMPLATE_ID = import.meta.env.REACT_APP_EMAILJS_TEMPLATE_ID || 'template_l4q45nh'
-      const EMAILJS_PUBLIC_KEY = import.meta.env.REACT_APP_EMAILJS_PUBLIC_KEY || 'AObLVQHs8Fd4OSv_P'
+      const EMAILJS_SERVICE_ID = import.meta.env.REACT_APP_EMAILJS_SERVICE_ID || 'your_service_id'
+      const EMAILJS_TEMPLATE_ID = import.meta.env.REACT_APP_EMAILJS_TEMPLATE_ID || 'your_template_id'
+      const EMAILJS_PUBLIC_KEY = import.meta.env.REACT_APP_EMAILJS_PUBLIC_KEY || 'your_public_key'
       
       // Prepare email data
       const phoneNumber = formData.get('phone')
