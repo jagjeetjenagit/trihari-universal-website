@@ -40,6 +40,12 @@ jobs:
       
     - name: Build React app
       run: npm run build
+      env:
+        VITE_GOOGLE_SHEETS_URL: ${{ secrets.VITE_GOOGLE_SHEETS_URL }}
+        REACT_APP_GOOGLE_SHEETS_URL: ${{ secrets.REACT_APP_GOOGLE_SHEETS_URL }}
+        REACT_APP_EMAILJS_SERVICE_ID: ${{ secrets.REACT_APP_EMAILJS_SERVICE_ID }}
+        REACT_APP_EMAILJS_TEMPLATE_ID: ${{ secrets.REACT_APP_EMAILJS_TEMPLATE_ID }}
+        REACT_APP_EMAILJS_PUBLIC_KEY: ${{ secrets.REACT_APP_EMAILJS_PUBLIC_KEY }}
       
     - name: Setup Pages
       uses: actions/configure-pages@v4
