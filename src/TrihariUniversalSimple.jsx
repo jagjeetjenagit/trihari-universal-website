@@ -429,10 +429,12 @@ export default function TrihariUniversalSimple(){
       let photoUrls = []
       let photoHtml = '<div style="color: white !important; padding: 20px; text-align: center;">❌ No photos uploaded</div>'
       
-      // Cloudinary configuration - Using environment variables
-      const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'your_cloud_name'
+      // Cloudinary configuration - Using environment variables with reliable fallbacks
+      const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || import.meta.env.REACT_APP_CLOUDINARY_CLOUD_NAME || 'dllmmfiba'
       const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`
-      const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'audition_photos'
+      const CLOUDINARY_UPLOAD_PRESET = 'ml_default' // Always use the default preset that exists in every account
+      
+      console.log('Cloudinary Config:', { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, CLOUDINARY_UPLOAD_URL })
       
       const headshotFiles = formData.getAll('headshot')
       
@@ -463,17 +465,12 @@ export default function TrihariUniversalSimple(){
               body: cloudinaryData
             })
             
-            // If custom preset fails, try with default preset
-            if (!response.ok && CLOUDINARY_UPLOAD_PRESET === 'audition_photos') {
-              const fallbackData = new FormData()
-              fallbackData.append('file', file)
-              fallbackData.append('upload_preset', 'ml_default') // Default unsigned preset
-              fallbackData.append('folder', 'auditions')
-              
-              response = await fetch(CLOUDINARY_UPLOAD_URL, {
-                method: 'POST',
-                body: fallbackData
-              })
+            // Log upload result for debugging
+            if (!response.ok) {
+              const errorText = await response.text()
+              console.error('Cloudinary upload failed:', response.status, errorText)
+            } else {
+              console.log('Cloudinary upload successful:', response.status)
             }
             
             if (response.ok) {
