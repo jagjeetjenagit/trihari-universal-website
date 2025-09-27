@@ -87,8 +87,8 @@ export default function TrihariUniversalSimple(){
   
   // Preloader effect
   useEffect(() => {
-    // Minimum 2 seconds loading time
-    const minLoadTime = 2000
+    // Minimum 4 seconds loading time for better experience
+    const minLoadTime = 4000
     const startTime = Date.now()
     
     const handleComplete = () => {
