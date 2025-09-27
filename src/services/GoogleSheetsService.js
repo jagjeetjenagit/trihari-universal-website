@@ -174,14 +174,20 @@ class GoogleSheetsService {
   async submitViaForm(formData) {
     return new Promise((resolve) => {
       try {
+        // Create hidden iframe for form submission (no new tab)
+        const iframe = document.createElement('iframe')
+        iframe.style.display = 'none'
+        iframe.name = 'google-sheets-submit'
+        document.body.appendChild(iframe)
+        
         // Create hidden form
         const form = document.createElement('form')
         form.method = 'POST'
         form.action = this.webAppUrl
-        form.target = '_blank'
+        form.target = 'google-sheets-submit'
         form.style.display = 'none'
         
-        // Add form fields
+        // Add form fields - ensure proper encoding
         Object.entries(formData).forEach(([key, value]) => {
           const input = document.createElement('input')
           input.type = 'hidden'
@@ -192,15 +198,37 @@ class GoogleSheetsService {
         
         // Add to page and submit
         document.body.appendChild(form)
+        
+        // Listen for iframe load (indicates submission complete)
+        iframe.onload = () => {
+          setTimeout(() => {
+            document.body.removeChild(form)
+            document.body.removeChild(iframe)
+            resolve(true)
+          }, 1000)
+        }
+        
+        iframe.onerror = () => {
+          setTimeout(() => {
+            document.body.removeChild(form)
+            document.body.removeChild(iframe)
+            resolve(false)
+          }, 1000)
+        }
+        
+        // Submit the form
         form.submit()
         
-        // Clean up
+        // Fallback timeout
         setTimeout(() => {
-          document.body.removeChild(form)
-        }, 1000)
-        
-        // Assume success since we can't get response due to CORS
-        resolve(true)
+          if (document.body.contains(form)) {
+            document.body.removeChild(form)
+          }
+          if (document.body.contains(iframe)) {
+            document.body.removeChild(iframe)
+          }
+          resolve(true) // Assume success even if we can't confirm
+        }, 5000)
         
       } catch (error) {
         resolve(false)
