@@ -87,12 +87,11 @@ export default function TrihariUniversalSimple(){
   
   // Preloader effect
   useEffect(() => {
-    // Ensure minimum loading time for smooth experience
-    const minLoadTime = 2000 // Minimum 2 seconds
+    // Minimum 2 seconds loading time
+    const minLoadTime = 2000
     const startTime = Date.now()
     
-    // Wait for assets and fonts to load
-    const handleLoad = () => {
+    const handleComplete = () => {
       const elapsed = Date.now() - startTime
       const remaining = Math.max(0, minLoadTime - elapsed)
       
@@ -101,14 +100,15 @@ export default function TrihariUniversalSimple(){
       }, remaining)
     }
 
+    // Wait for page load or minimum time
     if (document.readyState === 'complete') {
-      handleLoad()
+      handleComplete()
     } else {
-      window.addEventListener('load', handleLoad)
+      window.addEventListener('load', handleComplete)
     }
 
     return () => {
-      window.removeEventListener('load', handleLoad)
+      window.removeEventListener('load', handleComplete)
     }
   }, [])
 
@@ -196,7 +196,7 @@ export default function TrihariUniversalSimple(){
     )
   }
 
-  // Preloader Component
+  // Professional Preloader Component
   const Preloader = () => {
     if (!isLoading) return null
 
@@ -221,18 +221,6 @@ export default function TrihariUniversalSimple(){
               ease: "linear"
             }}
           />
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-l from-blue-500/5 via-transparent to-purple-500/5"
-            animate={{
-              rotate: [360, 0],
-              scale: [1.2, 1, 1.2]
-            }}
-            transition={{
-              duration: 12,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-          />
         </div>
 
         {/* Main Content */}
@@ -247,7 +235,7 @@ export default function TrihariUniversalSimple(){
             <motion.img
               src={logo}
               alt="Trihari Universal"
-              className="w-24 h-24 mx-auto rounded-full shadow-2xl shadow-red-500/30"
+              className="w-20 h-20 mx-auto rounded-full shadow-2xl shadow-red-500/30"
               animate={{
                 rotate: [0, 360],
                 scale: [1, 1.1, 1]
@@ -265,7 +253,7 @@ export default function TrihariUniversalSimple(){
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.8 }}
-            className="text-4xl md:text-5xl font-bold text-white mb-4"
+            className="text-3xl md:text-4xl font-bold text-white mb-4"
           >
             <span className="bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 bg-clip-text text-transparent">
               Trihari
@@ -286,11 +274,6 @@ export default function TrihariUniversalSimple(){
                 animate={{ rotate: 360 }}
                 transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                 className="w-full h-full border-4 border-gray-600 border-t-red-500 border-r-orange-500 rounded-full"
-              />
-              <motion.div
-                animate={{ rotate: -360 }}
-                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-2 border-2 border-gray-700 border-b-yellow-500 border-l-purple-500 rounded-full"
               />
             </div>
 
@@ -330,24 +313,8 @@ export default function TrihariUniversalSimple(){
             transition={{ delay: 1.5, duration: 0.8 }}
             className="text-gray-400 text-sm mt-8 max-w-md mx-auto"
           >
-            Where Stories Come to Life • Film Production • Casting • Entertainment
+            Where Stories Come to Life • Film Production • Casting
           </motion.p>
-        </div>
-
-        {/* Corner Decorations */}
-        <div className="absolute top-8 left-8">
-          <motion.div
-            animate={{ rotate: 360, scale: [1, 1.2, 1] }}
-            transition={{ duration: 6, repeat: Infinity }}
-            className="w-4 h-4 border-2 border-red-500/30 rotate-45"
-          />
-        </div>
-        <div className="absolute bottom-8 right-8">
-          <motion.div
-            animate={{ rotate: -360, scale: [1, 1.2, 1] }}
-            transition={{ duration: 8, repeat: Infinity }}
-            className="w-6 h-6 border-2 border-yellow-500/30 rounded-full"
-          />
         </div>
       </motion.div>
     )
