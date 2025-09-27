@@ -8,10 +8,18 @@ class GoogleSheetsService {
     // Google Apps Script Web App URL
     this.webAppUrl = import.meta.env?.VITE_GOOGLE_SHEETS_URL || process.env.REACT_APP_GOOGLE_SHEETS_URL || ''
     
+    // CORS proxy fallback URLs
+    this.corsProxies = [
+      'https://api.allorigins.win/raw?url=',
+      'https://corsproxy.io/?',
+      'https://thingproxy.freeboard.io/fetch/'
+    ]
+    
     // Debug logging
     console.log('🔧 GoogleSheetsService initialized:', {
       webAppUrl: this.webAppUrl ? '✅ Set' : '❌ Missing',
-      url: this.webAppUrl
+      url: this.webAppUrl,
+      corsProxies: this.corsProxies.length
     })
   }
 
@@ -64,38 +72,86 @@ class GoogleSheetsService {
         status: 'New Application'
       }
 
-      // Send to Google Apps Script
-      console.log('🚀 Sending request to:', this.webAppUrl)
+      let lastError = null
       
-      const response = await fetch(this.webAppUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(sheetData),
-        mode: 'cors'
-      })
+      // Try direct connection first
+      try {
+        console.log('� Attempting direct connection to Google Sheets...')
+        
+        const response = await fetch(this.webAppUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(sheetData),
+          mode: 'cors'
+        })
 
-      console.log('📡 Response received:', {
-        status: response.status,
-        statusText: response.statusText,
-        ok: response.ok
-      })
+        console.log('📡 Direct response received:', {
+          status: response.status,
+          statusText: response.statusText,
+          ok: response.ok
+        })
 
-      if (!response.ok) {
+        if (response.ok) {
+          const result = await response.json()
+          console.log('✅ Direct connection successful:', result)
+          
+          return {
+            success: true,
+            message: 'Data saved to spreadsheet (direct)',
+            rowId: result.rowId || null
+          }
+        }
+        
         const errorText = await response.text()
-        console.error('❌ Response error:', errorText)
-        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`)
+        throw new Error(`HTTP ${response.status}: ${errorText}`)
+        
+      } catch (error) {
+        console.log('⚠️ Direct connection failed:', error.message)
+        lastError = error
       }
 
-      const result = await response.json()
-      console.log('✅ Successfully saved to Google Sheets:', result)
-      
-      return {
-        success: true,
-        message: 'Data saved to spreadsheet',
-        rowId: result.rowId || null
+      // If direct connection fails, try CORS proxies
+      for (let i = 0; i < this.corsProxies.length; i++) {
+        const proxy = this.corsProxies[i]
+        const proxyUrl = proxy + encodeURIComponent(this.webAppUrl)
+        
+        try {
+          console.log(`🔄 Attempting CORS proxy ${i + 1}:`, proxy)
+          
+          const response = await fetch(proxyUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(sheetData)
+          })
+
+          console.log(`📡 Proxy ${i + 1} response:`, {
+            status: response.status,
+            ok: response.ok
+          })
+
+          if (response.ok) {
+            const result = await response.json()
+            console.log(`✅ CORS proxy ${i + 1} successful:`, result)
+            
+            return {
+              success: true,
+              message: `Data saved to spreadsheet (proxy ${i + 1})`,
+              rowId: result.rowId || null
+            }
+          }
+          
+        } catch (error) {
+          console.log(`⚠️ CORS proxy ${i + 1} failed:`, error.message)
+          lastError = error
+        }
       }
+
+      // All attempts failed
+      throw lastError || new Error('All connection attempts failed')
 
     } catch (error) {
       console.error('❌ Error saving to Google Sheets:', error)
