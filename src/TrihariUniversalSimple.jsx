@@ -433,6 +433,15 @@ export default function TrihariUniversalSimple(){
       const headshotFiles = formData.getAll('headshot')
       
       if (headshotFiles && headshotFiles.length > 0 && headshotFiles[0].size > 0) {
+        // Check file size limit (10MB = 10 * 1024 * 1024 bytes)
+        const maxFileSize = 10 * 1024 * 1024 // 10MB in bytes
+        
+        for (let i = 0; i < headshotFiles.length; i++) {
+          const file = headshotFiles[i]
+          if (file.size > maxFileSize) {
+            throw new Error(`File "${file.name}" is too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum file size is 10MB.`)
+          }
+        }
         
         try {
           for (let i = 0; i < headshotFiles.length; i++) {
@@ -2182,8 +2191,15 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                     name="headshot"
                     accept="image/*,application/pdf"
                     className={`w-full px-4 py-2 rounded-md border ${dark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                    onChange={(e) => {
+                      const file = e.target.files[0]
+                      if (file && file.size > 10 * 1024 * 1024) {
+                        alert(`❌ File too large: ${(file.size / 1024 / 1024).toFixed(2)}MB\n\nMaximum file size is 10MB. Please compress or choose a smaller file.`)
+                        e.target.value = '' // Clear the file input
+                      }
+                    }}
                   />
-                  <p className="text-xs opacity-60 mt-2">Max 10MB. JPG/PNG or a single PDF.</p>
+                  <p className="text-xs text-red-400 font-medium mt-2">📋 Maximum file size: 10MB | Formats: JPG, PNG, PDF</p>
                 </div>
                 <div className={`${dark ? 'bg-gray-800/60 border-gray-700' : 'bg-gray-50 border-gray-200'} border rounded-md p-4`}>
                   <p className="text-sm opacity-80">Tip: Use a recent, well-lit headshot with a neutral background.</p>
