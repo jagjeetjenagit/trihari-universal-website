@@ -1,6 +1,6 @@
 /**
  * Google Sheets API Service for Trihari Universal
- * Stores form submissions in Google Spreadsheet
+ * Stores for        // Try direct connection submissions in Google Spreadsheet
  */
 
 class GoogleSheetsService {
@@ -16,12 +16,10 @@ class GoogleSheetsService {
       'https://yacdn.org/proxy/'
     ]
     
-    // Debug logging
-    console.log('🔧 GoogleSheetsService initialized:', {
-      webAppUrl: this.webAppUrl ? '✅ Set' : '❌ Missing',
-      url: this.webAppUrl,
-      corsProxies: this.corsProxies.length
-    })
+    // Production: Only log critical issues
+    if (!this.webAppUrl) {
+      console.warn('GoogleSheetsService: Web App URL not configured')
+    }
   }
 
   /**
@@ -33,11 +31,7 @@ class GoogleSheetsService {
     try {
       // Check if Web App URL is configured
       if (!this.webAppUrl) {
-        console.warn('⚠️ Google Sheets Web App URL not configured')
-        console.log('Debug - Environment check:', {
-          VITE_GOOGLE_SHEETS_URL: import.meta.env?.VITE_GOOGLE_SHEETS_URL,
-          REACT_APP_GOOGLE_SHEETS_URL: process.env.REACT_APP_GOOGLE_SHEETS_URL
-        })
+        console.warn('Google Sheets Web App URL not configured')
         return {
           success: false,
           message: 'Google Sheets not configured',
@@ -45,10 +39,7 @@ class GoogleSheetsService {
         }
       }
 
-      console.log('📊 Submitting to Google Sheets...', {
-        url: this.webAppUrl,
-        data: formData
-      })
+      // Production: Submit to Google Sheets
       
       // Prepare data for Google Sheets
       const sheetData = {
@@ -88,15 +79,8 @@ class GoogleSheetsService {
           mode: 'cors'
         })
 
-        console.log('📡 Direct response received:', {
-          status: response.status,
-          statusText: response.statusText,
-          ok: response.ok
-        })
-
         if (response.ok) {
           const result = await response.json()
-          console.log('✅ Direct connection successful:', result)
           
           return {
             success: true,
@@ -109,26 +93,20 @@ class GoogleSheetsService {
         throw new Error(`HTTP ${response.status}: ${errorText}`)
         
       } catch (error) {
-        console.log('⚠️ Direct connection failed:', error.message)
         lastError = error
       }
 
-      // If direct connection fails, try alternative approach: form submission
-      console.log('🔄 Attempting alternative form submission method...')
-      
+      // Try form submission method
       try {
-        // Create a hidden form and submit it to bypass CORS
         const success = await this.submitViaForm(sheetData)
         if (success) {
-          console.log('✅ Form submission method successful')
           return {
             success: true,
-            message: 'Data saved to spreadsheet (form method)',
+            message: 'Data saved to spreadsheet',
             rowId: 'form-' + Date.now()
           }
         }
       } catch (formError) {
-        console.log('⚠️ Form submission failed:', formError.message)
         lastError = formError
       }
 
@@ -138,8 +116,6 @@ class GoogleSheetsService {
         const proxyUrl = proxy + encodeURIComponent(this.webAppUrl)
         
         try {
-          console.log(`🔄 Attempting CORS proxy ${i + 1}:`, proxy)
-          
           const response = await fetch(proxyUrl, {
             method: 'POST',
             headers: {
@@ -148,21 +124,11 @@ class GoogleSheetsService {
             body: JSON.stringify(sheetData)
           })
 
-          console.log(`📡 Proxy ${i + 1} response:`, {
-            status: response.status,
-            ok: response.ok,
-            contentType: response.headers.get('content-type')
-          })
-
           if (response.ok) {
-            // Get response text first to check what we actually received
             const responseText = await response.text()
-            console.log(`📄 Proxy ${i + 1} raw response:`, responseText.substring(0, 500))
             
             try {
-              // Try to parse as JSON
               const result = JSON.parse(responseText)
-              console.log(`✅ CORS proxy ${i + 1} successful:`, result)
               
               // Verify it's actually a success response from our Google Apps Script
               if (result.success === true && result.rowId) {
@@ -172,19 +138,15 @@ class GoogleSheetsService {
                   rowId: result.rowId
                 }
               } else {
-                console.log(`⚠️ Proxy ${i + 1} returned unexpected format:`, result)
-                throw new Error(`Unexpected response format: ${JSON.stringify(result)}`)
+                throw new Error(`Unexpected response format`)
               }
               
             } catch (parseError) {
-              console.log(`❌ Proxy ${i + 1} response not valid JSON:`, parseError.message)
-              console.log(`Raw response: ${responseText.substring(0, 200)}...`)
               throw new Error(`Invalid JSON response: ${parseError.message}`)
             }
           }
           
         } catch (error) {
-          console.log(`⚠️ CORS proxy ${i + 1} failed:`, error.message)
           lastError = error
         }
       }
@@ -212,8 +174,6 @@ class GoogleSheetsService {
   async submitViaForm(formData) {
     return new Promise((resolve) => {
       try {
-        console.log('📝 Creating hidden form for submission...')
-        
         // Create hidden form
         const form = document.createElement('form')
         form.method = 'POST'
@@ -239,13 +199,10 @@ class GoogleSheetsService {
           document.body.removeChild(form)
         }, 1000)
         
-        console.log('✅ Form submitted successfully')
-        
         // Assume success since we can't get response due to CORS
         resolve(true)
         
       } catch (error) {
-        console.error('❌ Form submission error:', error)
         resolve(false)
       }
     })
