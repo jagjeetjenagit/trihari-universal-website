@@ -8,8 +8,11 @@ import emailjs from '@emailjs/browser'
 import GitHubFormHandler from './utils/GitHubFormHandler'
 import GoogleSheetsService from './services/GoogleSheetsService'
 import GoogleSheetsTestPanel from './components/GoogleSheetsTestPanel'
-import logo from './assets/trihari_universal_white.png'
-import founderImage from './assets/1000010434.jpg'
+// Import images from public folder with proper base URL and cache-busting
+const baseUrl = import.meta.env.BASE_URL || '/'
+const cacheVersion = '?v=2025-09-28-fix'
+const logo = `${baseUrl}circular logog trihari.png${cacheVersion}`
+const founderImage = `${baseUrl}1000010434.jpg${cacheVersion}`
 
 // Section Divider Component - Mobile Only
 const SectionDivider = () => (
