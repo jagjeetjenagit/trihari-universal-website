@@ -66,6 +66,9 @@ export default function TrihariUniversalSimple(){
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [igPosts, setIgPosts] = useState([])
   
+  // Preloader state
+  const [isLoading, setIsLoading] = useState(true)
+  
   // Simple progress popup state
   const [showProgress, setShowProgress] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
@@ -82,6 +85,33 @@ export default function TrihariUniversalSimple(){
   const y = useTransform(scrollYProgress, [0, 1], [0, -50])
   const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.8, 0.6])
   
+  // Preloader effect
+  useEffect(() => {
+    // Ensure minimum loading time for smooth experience
+    const minLoadTime = 2000 // Minimum 2 seconds
+    const startTime = Date.now()
+    
+    // Wait for assets and fonts to load
+    const handleLoad = () => {
+      const elapsed = Date.now() - startTime
+      const remaining = Math.max(0, minLoadTime - elapsed)
+      
+      setTimeout(() => {
+        setIsLoading(false)
+      }, remaining)
+    }
+
+    if (document.readyState === 'complete') {
+      handleLoad()
+    } else {
+      window.addEventListener('load', handleLoad)
+    }
+
+    return () => {
+      window.removeEventListener('load', handleLoad)
+    }
+  }, [])
+
   // Mouse tracking for interactive effects
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -162,6 +192,163 @@ export default function TrihariUniversalSimple(){
             )}
           </div>
         </motion.div>
+      </motion.div>
+    )
+  }
+
+  // Preloader Component
+  const Preloader = () => {
+    if (!isLoading) return null
+
+    return (
+      <motion.div
+        initial={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.8 }}
+        className="fixed inset-0 z-50 bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center"
+      >
+        {/* Background Animation */}
+        <div className="absolute inset-0">
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-red-500/10 via-transparent to-red-500/10"
+            animate={{
+              rotate: [0, 360],
+              scale: [1, 1.2, 1]
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          />
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-l from-blue-500/5 via-transparent to-purple-500/5"
+            animate={{
+              rotate: [360, 0],
+              scale: [1.2, 1, 1.2]
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          />
+        </div>
+
+        {/* Main Content */}
+        <div className="relative z-10 text-center">
+          {/* Logo Animation */}
+          <motion.div
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="mb-8"
+          >
+            <motion.img
+              src={logo}
+              alt="Trihari Universal"
+              className="w-24 h-24 mx-auto rounded-full shadow-2xl shadow-red-500/30"
+              animate={{
+                rotate: [0, 360],
+                scale: [1, 1.1, 1]
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          </motion.div>
+
+          {/* Brand Name */}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="text-4xl md:text-5xl font-bold text-white mb-4"
+          >
+            <span className="bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 bg-clip-text text-transparent">
+              Trihari
+            </span>
+            <span className="text-white ml-2">Universal</span>
+          </motion.h1>
+
+          {/* Loading Animation */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1, duration: 0.5 }}
+            className="relative"
+          >
+            {/* Spinning Ring */}
+            <div className="w-16 h-16 mx-auto mb-6 relative">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                className="w-full h-full border-4 border-gray-600 border-t-red-500 border-r-orange-500 rounded-full"
+              />
+              <motion.div
+                animate={{ rotate: -360 }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-2 border-2 border-gray-700 border-b-yellow-500 border-l-purple-500 rounded-full"
+              />
+            </div>
+
+            {/* Loading Text */}
+            <motion.p
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="text-gray-300 text-lg font-medium"
+            >
+              Loading Experience...
+            </motion.p>
+
+            {/* Progress Dots */}
+            <div className="flex justify-center mt-4 space-x-2">
+              {[0, 1, 2].map((i) => (
+                <motion.div
+                  key={i}
+                  animate={{
+                    scale: [1, 1.5, 1],
+                    opacity: [0.3, 1, 0.3]
+                  }}
+                  transition={{
+                    duration: 1.2,
+                    repeat: Infinity,
+                    delay: i * 0.4
+                  }}
+                  className="w-2 h-2 bg-red-500 rounded-full"
+                />
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Tagline */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5, duration: 0.8 }}
+            className="text-gray-400 text-sm mt-8 max-w-md mx-auto"
+          >
+            Where Stories Come to Life • Film Production • Casting • Entertainment
+          </motion.p>
+        </div>
+
+        {/* Corner Decorations */}
+        <div className="absolute top-8 left-8">
+          <motion.div
+            animate={{ rotate: 360, scale: [1, 1.2, 1] }}
+            transition={{ duration: 6, repeat: Infinity }}
+            className="w-4 h-4 border-2 border-red-500/30 rotate-45"
+          />
+        </div>
+        <div className="absolute bottom-8 right-8">
+          <motion.div
+            animate={{ rotate: -360, scale: [1, 1.2, 1] }}
+            transition={{ duration: 8, repeat: Infinity }}
+            className="w-6 h-6 border-2 border-yellow-500/30 rounded-full"
+          />
+        </div>
       </motion.div>
     )
   }
@@ -531,10 +718,15 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
   const selectStyle = `${dark ? 'bg-gray-800/70 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'} w-full px-3 sm:px-4 py-2.5 sm:py-3.5 rounded-md border focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm sm:text-base`;
 
   return (
-    <div 
-      ref={containerRef}
-      className={`min-h-screen w-full max-w-[100vw] ${dark ? 'bg-black text-white' : 'bg-white text-gray-900'} transition-colors duration-300 relative overflow-x-hidden`}
-    >
+    <>
+      {/* Preloader */}
+      <Preloader />
+      
+      <div 
+        ref={containerRef}
+        className={`min-h-screen w-full max-w-[100vw] ${dark ? 'bg-black text-white' : 'bg-white text-gray-900'} transition-colors duration-300 relative overflow-x-hidden ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+        style={{ transition: 'opacity 0.8s ease-in-out' }}
+      >
       {/* Dynamic Mouse-Following Background */}
       <motion.div
         className="fixed inset-0 pointer-events-none z-0"
@@ -2314,5 +2506,6 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
       <GoogleSheetsTestPanel />
 
     </div>
+    </>
   )
 }
