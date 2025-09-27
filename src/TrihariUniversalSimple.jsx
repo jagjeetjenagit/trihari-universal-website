@@ -533,9 +533,11 @@ Ask applicant to resend photos directly.`
       }
       
       // EmailJS Configuration - Using environment variables
-      const EMAILJS_SERVICE_ID = import.meta.env.REACT_APP_EMAILJS_SERVICE_ID || 'your_service_id'
-      const EMAILJS_TEMPLATE_ID = import.meta.env.REACT_APP_EMAILJS_TEMPLATE_ID || 'your_template_id'
-      const EMAILJS_PUBLIC_KEY = import.meta.env.REACT_APP_EMAILJS_PUBLIC_KEY || 'your_public_key'
+      const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || import.meta.env.REACT_APP_EMAILJS_SERVICE_ID || 'service_boc9xs9'
+      const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || import.meta.env.REACT_APP_EMAILJS_TEMPLATE_ID || 'template_l4q45nh'
+      const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || import.meta.env.REACT_APP_EMAILJS_PUBLIC_KEY || 'AObLVQHs8Fd4OSv_P'
+      
+
       
       // Prepare email data
       const phoneNumber = formData.get('phone')
@@ -611,6 +613,8 @@ Ask applicant to resend photos directly.`
 
       // Wait for both to complete
       const [emailResult, sheetsResult] = await Promise.allSettled([emailPromise, sheetsPromise])
+
+
 
       // Determine success message
       const emailSuccess = emailResult.status === 'fulfilled'
