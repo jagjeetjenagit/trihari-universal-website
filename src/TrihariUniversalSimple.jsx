@@ -432,7 +432,7 @@ export default function TrihariUniversalSimple(){
       // Cloudinary configuration - Using environment variables with reliable fallbacks
       const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || import.meta.env.REACT_APP_CLOUDINARY_CLOUD_NAME || 'dllmmfiba'
       const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`
-      const CLOUDINARY_UPLOAD_PRESET = 'ml_default' // Always use the default preset that exists in every account
+      const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || import.meta.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET || 'ml_default' // Use env variable or fallback to default
       
       console.log('Cloudinary Config:', { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, CLOUDINARY_UPLOAD_URL })
       
@@ -2195,16 +2195,27 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                     type="file"
                     name="headshot"
                     accept="image/*,application/pdf"
+                    multiple
                     className={`w-full px-4 py-2 rounded-md border ${dark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
                     onChange={(e) => {
-                      const file = e.target.files[0]
-                      if (file && file.size > 10 * 1024 * 1024) {
-                        alert(`❌ File too large: ${(file.size / 1024 / 1024).toFixed(2)}MB\n\nMaximum file size is 10MB. Please compress or choose a smaller file.`)
+                      const files = Array.from(e.target.files)
+                      const oversizedFiles = files.filter(file => file.size > 10 * 1024 * 1024)
+                      
+                      if (oversizedFiles.length > 0) {
+                        const fileList = oversizedFiles.map(file => 
+                          `• ${file.name}: ${(file.size / 1024 / 1024).toFixed(2)}MB`
+                        ).join('\n')
+                        
+                        alert(`❌ Some files are too large:\n\n${fileList}\n\nMaximum file size is 10MB per file. Please compress or choose smaller files.`)
                         e.target.value = '' // Clear the file input
+                      } else if (files.length > 0) {
+                        const totalSize = files.reduce((sum, file) => sum + file.size, 0)
+                        const totalMB = (totalSize / 1024 / 1024).toFixed(2)
+                        console.log(`Selected ${files.length} file(s), total size: ${totalMB}MB`)
                       }
                     }}
                   />
-                  <p className="text-xs text-red-400 font-medium mt-2">📋 Maximum file size: 10MB | Formats: JPG, PNG, PDF</p>
+                  <p className="text-xs text-red-400 font-medium mt-2">📋 Maximum file size: 10MB each | Multiple files allowed | Formats: JPG, PNG, PDF</p>
                 </div>
                 <div className={`${dark ? 'bg-gray-800/60 border-gray-700' : 'bg-gray-50 border-gray-200'} border rounded-md p-4`}>
                   <p className="text-sm opacity-80">Tip: Use a recent, well-lit headshot with a neutral background.</p>
