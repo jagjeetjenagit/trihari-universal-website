@@ -18,6 +18,9 @@
     <meta name="bingbot" content="index, follow" />
     <link rel="alternate" hreflang="en" href="https://trihariuniversal.com/" />
     
+    <!-- IndexNow for instant Bing/Microsoft indexing -->
+    <meta name="IndexNow" content="47d1e9f3-8b2a-4c5e-9f7a-2d8c6b4e1a9f" />
+    
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://trihariuniversal.com/" />
@@ -37,31 +40,98 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://trihariuniversal.com/" />
     
-    <!-- Structured Data for Google -->
+    <!-- Enhanced Structured Data for Maximum Authority -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Trihari Universal",
-      "url": "https://trihariuniversal.com",
-      "logo": "https://trihariuniversal.com/trihari_universal_white.png",
-      "description": "Premier film production house creating cinematic stories with bold visuals",
-      "foundingDate": "2020",
-      "industry": "Film Production",
-      "areaServed": "IN",
-      "serviceType": "Film Production, Casting, Auditions",
-      "sameAs": [],
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "contactType": "Customer Service",
-        "areaServed": "IN",
-        "availableLanguage": ["English", "Hindi"]
-      },
-      "offers": {
-        "@type": "Offer",
-        "name": "Acting Auditions",
-        "description": "Professional auditions for films, commercials and branded content"
-      }
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://trihariuniversal.com/#organization",
+          "name": "Trihari Universal",
+          "url": "https://trihariuniversal.com",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://trihariuniversal.com/trihari_universal_white.png",
+            "width": 300,
+            "height": 300
+          },
+          "description": "Premier film production house creating cinematic stories with bold visuals. Professional casting and audition services.",
+          "foundingDate": "2020",
+          "industry": "Entertainment",
+          "areaServed": {
+            "@type": "Country",
+            "name": "India"
+          },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Film Production Services",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Film Production",
+                  "description": "Full-service film production from concept to delivery"
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Casting Services",
+                  "description": "Professional casting and audition management"
+                }
+              }
+            ]
+          },
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "Customer Service",
+            "areaServed": "IN",
+            "availableLanguage": ["English", "Hindi"]
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://trihariuniversal.com/#website",
+          "url": "https://trihariuniversal.com",
+          "name": "Trihari Universal",
+          "description": "Film Production House - Auditions & Casting Platform",
+          "publisher": {
+            "@id": "https://trihariuniversal.com/#organization"
+          },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://trihariuniversal.com/?s={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "WebPage",
+          "@id": "https://trihariuniversal.com/#webpage",
+          "url": "https://trihariuniversal.com",
+          "name": "Audition Application - Trihari Universal",
+          "isPartOf": {
+            "@id": "https://trihariuniversal.com/#website"
+          },
+          "about": {
+            "@id": "https://trihariuniversal.com/#organization"
+          },
+          "description": "Apply for auditions with Trihari Universal. Submit your application for films, commercials, and branded content opportunities.",
+          "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://trihariuniversal.com"
+              }
+            ]
+          }
+        }
+      ]
     }
     </script>
     
