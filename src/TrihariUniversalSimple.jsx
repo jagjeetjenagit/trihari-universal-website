@@ -699,7 +699,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
           <img
             src={item.image}
             alt={item.title}
-            className="absolute inset-0 w-full h-full object-cover brightness-50"
+            className="absolute inset-0 w-full h-full object-cover brightness-50 pointer-events-none select-none"
           />
         )}
 
@@ -724,7 +724,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
           ))}
         </div>
 
-        <motion.div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        <motion.div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
       </motion.div>
     )
   }
