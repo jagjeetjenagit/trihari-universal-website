@@ -708,23 +708,26 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
           <img
             src={item.image}
             alt={item.title}
-            className="absolute inset-0 w-full h-full object-cover brightness-50 pointer-events-none select-none"
+            className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
           />
         )}
 
-        <div className="relative z-10 text-left px-6 py-6 max-w-[86%]">
-          <div className="text-xs sm:text-sm uppercase tracking-widest text-blue-300 font-semibold mb-1">
-            COMING SOON
+        {/* Caption placed at bottom-left with a small backdrop to avoid dulling the whole image */}
+        <div className="absolute bottom-4 left-4 z-30">
+          <div className="inline-block bg-black/30 backdrop-blur-sm rounded-md p-3 max-w-[86%] pointer-events-none">
+            <div className="text-xs sm:text-sm uppercase tracking-widest text-blue-300 font-semibold mb-1">
+              COMING SOON
+            </div>
+            <h3 className="text-base sm:text-lg md:text-xl font-extrabold text-white tracking-tight leading-snug">
+              {item.title}
+            </h3>
+            <p className="mt-1 text-xs sm:text-sm text-blue-200/80 opacity-90">
+              {item.desc}
+            </p>
           </div>
-          <h3 className="text-base sm:text-lg md:text-xl font-extrabold text-white tracking-tight leading-snug">
-            {item.title}
-          </h3>
-          <p className="mt-1 text-xs sm:text-sm text-blue-200/80 opacity-90">
-            {item.desc}
-          </p>
         </div>
 
-        <div className="absolute bottom-4 left-4 z-20 flex items-center gap-2">
+        <div className="absolute bottom-4 right-4 z-20 flex items-center gap-2">
           {items.map((_, i) => (
             <div
               key={i}
@@ -733,7 +736,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
           ))}
         </div>
 
-        <motion.div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+        {/* removed full-image overlay to keep banner vivid */}
       </motion.div>
     )
   }
