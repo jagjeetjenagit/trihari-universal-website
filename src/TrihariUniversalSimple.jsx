@@ -670,18 +670,10 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
 
   // Featured projects (includes Instagram highlights)
   const projects = [
-    // Instagram posts from JSON (first 3 prioritized in grid)
-    ...igPosts.slice(0, 3).map(p => ({
-      title: p.title || 'Instagram Post',
-      category: 'Instagram',
-      desc: p.caption || 'From our Instagram',
-      link: p.link || 'https://www.instagram.com/trihariuniversal/',
-      thumbnail: p.thumbnail,
-      source: 'instagram'
-    })),
+
     // Existing placeholders
-    { title: 'Corporate Documentary', category: 'Film', desc: 'Award-winning documentary series' },
-    { title: 'Short Film', category: 'Film', desc: 'Festival-selected narrative film' }
+    { title: 'State V/S Amit Vyas', category: 'Film', desc: 'A courtroom drama exploring truth and justice.',image: `${baseUrl}statevsamit.jpeg` },
+    { title: 'Bedhai', category: 'Film', desc: 'A heartfelt cinematic story by Parivesh Singh.', image: `${baseUrl}bedhai.jpeg`}
   ]
 
   // Clear error styling function
@@ -1246,7 +1238,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
       {/* WORK SECTION */}
       <section 
         id="work" 
-        className="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-12 sm:py-16 md:py-20"
+        className="w-full max-w-6xl mx-auto px-6 py-20"
       >
         <div 
           style={{ 
@@ -1260,6 +1252,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
         >
           <h3 
             style={{ 
+              textAlign: 'center',
               transition: 'none !important', 
               animation: 'none !important', 
               transform: 'none !important',
@@ -1278,6 +1271,8 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
           </h3>
           <h2 
             style={{ 
+              textAlign: 'center',
+              marginBottom: '3rem',
               transition: 'none !important', 
               animation: 'none !important', 
               transform: 'none !important',
@@ -1293,11 +1288,8 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
           </h2>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-          {[
-            { title: 'Corporate Documentary', category: 'Film', desc: 'Award-winning documentary series' },
-            { title: 'Short Film', category: 'Film', desc: 'Festival-selected narrative film' }
-          ].map((project, i) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6 sm:gap-8 max-w-3xl mx-auto">
+          {projects.map((project, i) => (
             <motion.div
               key={i}
               className={`group cursor-pointer relative overflow-hidden rounded-sm ${dark ? 'bg-gray-900/50' : 'bg-gray-100/50'} hover:shadow-xl transition-all duration-300`}
@@ -1307,17 +1299,29 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
               viewport={{ once: true }}
               whileHover={{ scale: 1.02 }}
             >
-              <div className="aspect-video bg-gradient-to-br from-gray-800 to-black flex items-center justify-center relative">
+              <div className="aspect-[3/4] relative overflow-hidden">
+                <img 
+                  src={project.image || project.thumbnail}
+                  alt={project.title}
+                  className="w-full h-full object-contain bg-black rounded-lg shadow-2xl group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-300"></div>
                 <div className="text-4xl opacity-30">🎬</div>
                 <div className="absolute inset-0 bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs uppercase tracking-wider opacity-60">{project.category}</span>
-                  <span className="text-red-500 text-xs">View →</span>
+              <div className="p-6 text-center">
+                <span className="text-xs uppercase tracking-wider opacity-60 block mb-2">
+                  {project.category}
+                </span>
+                <h3 className="font-semibold text-lg mb-2">
+                  {project.title}
+                </h3>
+                <p className="text-sm opacity-80">
+                  {project.desc}
+                </p>
+                <div className="mt-3 text-red-500 text-xs font-medium">
+                  View →
                 </div>
-                <h3 className="font-semibold text-lg mb-2">{project.title}</h3>
-                <p className="text-sm opacity-80">{project.desc}</p>
               </div>
             </motion.div>
           ))}
