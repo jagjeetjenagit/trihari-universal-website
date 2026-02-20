@@ -690,7 +690,8 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
 
     return (
       <motion.div
-        className={`aspect-[3/4] ${className} rounded-lg overflow-hidden shadow-2xl bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center relative group border border-gray-700/30 w-full`}
+        className={`aspect-[3/4] ${className} rounded-lg overflow-hidden shadow-2xl bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center relative group border border-gray-700/30 w-full z-40 transform-gpu`}
+        style={{ willChange: 'transform, opacity', transform: 'translateZ(0)' }}
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
