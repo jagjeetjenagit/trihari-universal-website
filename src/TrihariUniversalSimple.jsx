@@ -699,7 +699,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
     return (
       <div className={`w-full ${className}`}>
         <motion.div
-          className={`aspect-[3/4] md:aspect-[4/3] lg:aspect-video rounded-lg overflow-hidden shadow-2xl bg-gradient-to-br from-gray-900 via-black to-gray-800 relative border border-gray-700/30 w-full max-h-[70vh] md:max-h-[60vh] lg:max-h-[55vh] z-40 transform-gpu`}
+          className={`aspect-[3/4] rounded-lg overflow-hidden shadow-2xl bg-gradient-to-br from-gray-900 via-black to-gray-800 relative border border-gray-700/30 w-full max-h-[70vh] md:max-h-[60vh] lg:max-h-[55vh] z-40 transform-gpu md:scale-95 lg:scale-90 md:mx-auto`}
           style={{ willChange: 'transform, opacity', transform: 'translateZ(0)' }}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
