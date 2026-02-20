@@ -703,16 +703,19 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
           />
         )}
 
-        <div className="relative z-10 text-center px-6">
-          <h3 className="text-lg sm:text-2xl md:text-3xl font-extrabold text-white tracking-wide">
+        <div className="relative z-10 text-left px-6 py-6 max-w-[86%]">
+          <div className="text-xs sm:text-sm uppercase tracking-widest text-blue-300 font-semibold mb-1">
+            COMING SOON
+          </div>
+          <h3 className="text-base sm:text-lg md:text-xl font-extrabold text-white tracking-tight leading-snug">
             {item.title}
           </h3>
-          <p className="mt-2 text-sm sm:text-base text-blue-200/90 opacity-90">
+          <p className="mt-1 text-xs sm:text-sm text-blue-200/80 opacity-90">
             {item.desc}
           </p>
         </div>
 
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 flex items-center gap-2">
+        <div className="absolute bottom-4 left-4 z-20 flex items-center gap-2">
           {items.map((_, i) => (
             <div
               key={i}
