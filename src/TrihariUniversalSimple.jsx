@@ -687,6 +687,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
   // Rotating banner component for hero (cycles every 3s)
   const RotatingBanner = ({ items = [], className = '' }) => {
     const [idx, setIdx] = useState(0)
+    const touchStartX = useRef(null)
 
     useEffect(() => {
       if (!items || items.length === 0) return
@@ -696,9 +697,33 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
 
     const item = items[idx] || {}
 
+    const prev = () => setIdx(i => (i - 1 + items.length) % items.length)
+    const next = () => setIdx(i => (i + 1) % items.length)
+
+    const handlePointerDown = (e) => {
+      // pointer events unify mouse/touch
+      touchStartX.current = e.clientX || (e.touches && e.touches[0] && e.touches[0].clientX) || null
+    }
+
+    const handlePointerUp = (e) => {
+      const endX = e.clientX || (e.changedTouches && e.changedTouches[0] && e.changedTouches[0].clientX) || null
+      if (touchStartX.current == null || endX == null) {
+        touchStartX.current = null
+        return
+      }
+      const dx = endX - touchStartX.current
+      if (Math.abs(dx) > 30) {
+        if (dx < 0) next()
+        else prev()
+      }
+      touchStartX.current = null
+    }
+
     return (
       <div className={`w-full ${className}`}>
         <motion.div
+          onPointerDown={handlePointerDown}
+          onPointerUp={handlePointerUp}
           className={`aspect-[3/4] max-w-[384px] w-full rounded-lg overflow-hidden shadow-2xl bg-gradient-to-br from-gray-900 via-black to-gray-800 relative border border-gray-700/30 z-40 transform-gpu md:max-w-[480px] transition-transform duration-200 mx-auto`}
           style={{ willChange: 'transform, opacity', transform: 'translateZ(0)', maxWidth: 'min(90vw, calc(100vh * 0.75), 480px)' }}
           initial={{ opacity: 0, y: 8 }}
@@ -712,6 +737,29 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
               className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
             />
           )}
+
+          {/* Left / Right navigation buttons (minimal, do not dim image) */}
+          <button
+            aria-label="Previous"
+            onClick={prev}
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-50 p-2 rounded-full bg-black/30 hover:bg-black/40 text-white focus:outline-none"
+            style={{ pointerEvents: 'auto' }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4">
+              <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+            </svg>
+          </button>
+
+          <button
+            aria-label="Next"
+            onClick={next}
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-50 p-2 rounded-full bg-black/30 hover:bg-black/40 text-white focus:outline-none"
+            style={{ pointerEvents: 'auto' }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4">
+              <path fill="currentColor" d="m10.59 16.59 1.41 1.41L18 12l-6-6-1.41 1.41L15.17 12z" />
+            </svg>
+          </button>
         </motion.div>
 
         {/* Caption below the banner to avoid overlaying the image */}
