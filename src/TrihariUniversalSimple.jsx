@@ -1763,7 +1763,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                   <span className="opacity-60">•</span>
                   <span className="inline-block">Auditions</span>
                   <span className="opacity-60">•</span>
-                  <span className="inline-block text-blue-400">2025</span>
+                  <span className="inline-block text-blue-400">2026</span>
                 </motion.div>
 
                 <motion.h3 
