@@ -118,11 +118,19 @@ export default function TrihariUniversalSimple(){
   // Mouse tracking for interactive effects
   useEffect(() => {
     const handleMouseMove = (e) => {
+      // Do not update mouse-driven background when pointer is inside the hero
+      try {
+        if (heroRef && heroRef.current && heroRef.current.contains(e.target)) return
+      } catch (err) {
+        // ignore
+      }
+
       setMousePosition({
         x: (e.clientX / window.innerWidth) * 100,
         y: (e.clientY / window.innerHeight) * 100
       })
     }
+
     window.addEventListener('mousemove', handleMouseMove)
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
