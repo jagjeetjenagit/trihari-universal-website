@@ -697,47 +697,49 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
     const item = items[idx] || {}
 
     return (
-      <motion.div
-        className={`aspect-[3/4] ${className} rounded-lg overflow-hidden shadow-2xl bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center relative group border border-gray-700/30 w-full z-40 transform-gpu`}
-        style={{ willChange: 'transform, opacity', transform: 'translateZ(0)' }}
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        {item.image && (
-          <img
-            src={item.image}
-            alt={item.title}
-            className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
-          />
-        )}
+      <div className={`w-full ${className}`}>
+        <motion.div
+          className={`aspect-[3/4] rounded-lg overflow-hidden shadow-2xl bg-gradient-to-br from-gray-900 via-black to-gray-800 relative border border-gray-700/30 w-full z-40 transform-gpu`}
+          style={{ willChange: 'transform, opacity', transform: 'translateZ(0)' }}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          {item.image && (
+            <img
+              src={item.image}
+              alt={item.title}
+              className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
+            />
+          )}
+        </motion.div>
 
-        {/* Caption placed at bottom-left with a small backdrop to avoid dulling the whole image */}
-        <div className="absolute bottom-4 left-4 z-30">
-          <div className="inline-block bg-black/30 backdrop-blur-sm rounded-md p-3 max-w-[86%] pointer-events-none">
-            <div className="text-xs sm:text-sm uppercase tracking-widest text-blue-300 font-semibold mb-1">
-              COMING SOON
+        {/* Caption below the banner to avoid overlaying the image */}
+        <div className="mt-3 px-3 sm:px-4">
+          <div className="inline-flex items-start justify-between w-full">
+            <div className="max-w-[86%]">
+              <div className="text-xs sm:text-sm uppercase tracking-widest text-blue-300 font-semibold mb-1">
+                COMING SOON
+              </div>
+              <h3 className="text-base sm:text-lg md:text-xl font-extrabold text-white tracking-tight leading-snug">
+                {item.title}
+              </h3>
+              <p className="mt-1 text-xs sm:text-sm text-blue-200/80 opacity-90">
+                {item.desc}
+              </p>
             </div>
-            <h3 className="text-base sm:text-lg md:text-xl font-extrabold text-white tracking-tight leading-snug">
-              {item.title}
-            </h3>
-            <p className="mt-1 text-xs sm:text-sm text-blue-200/80 opacity-90">
-              {item.desc}
-            </p>
+
+            <div className="flex items-center gap-2 ml-4">
+              {items.map((_, i) => (
+                <div
+                  key={i}
+                  className={`w-2 h-2 rounded-full ${i === idx ? 'bg-red-400' : 'bg-white/30'} transition-all duration-300`}
+                />
+              ))}
+            </div>
           </div>
         </div>
-
-        <div className="absolute bottom-4 right-4 z-20 flex items-center gap-2">
-          {items.map((_, i) => (
-            <div
-              key={i}
-              className={`w-2 h-2 rounded-full ${i === idx ? 'bg-red-400' : 'bg-white/30'} transition-all duration-300`}
-            />
-          ))}
-        </div>
-
-        {/* removed full-image overlay to keep banner vivid */}
-      </motion.div>
+      </div>
     )
   }
 
