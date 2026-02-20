@@ -673,8 +673,58 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
 
     // Existing placeholders
     { title: 'State V/S Amit Vyas', category: 'Film', desc: 'A courtroom drama exploring truth and justice.',image: `${baseUrl}statevsamit.jpeg` },
-    { title: 'Bedhai', category: 'Film', desc: 'A heartfelt cinematic story by Parivesh Singh.', image: `${baseUrl}bedhai.jpeg`}
+    { title: 'Bedhai', category: 'Film', desc: 'A small town romantic story.', image: `${baseUrl}bedhai.jpeg`}
   ]
+
+  // Rotating banner component for hero (cycles every 3s)
+  const RotatingBanner = ({ items = [], className = '' }) => {
+    const [idx, setIdx] = useState(0)
+
+    useEffect(() => {
+      if (!items || items.length === 0) return
+      const t = setInterval(() => setIdx(i => (i + 1) % items.length), 3000)
+      return () => clearInterval(t)
+    }, [items])
+
+    const item = items[idx] || {}
+
+    return (
+      <motion.div
+        className={`aspect-video ${className} rounded-lg overflow-hidden shadow-2xl bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center relative group border border-gray-700/30 w-full`}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+      >
+        {item.image && (
+          <img
+            src={item.image}
+            alt={item.title}
+            className="absolute inset-0 w-full h-full object-cover brightness-50"
+          />
+        )}
+
+        <div className="relative z-10 text-center px-6">
+          <h3 className="text-lg sm:text-2xl md:text-3xl font-extrabold text-white tracking-wide">
+            {item.title}
+          </h3>
+          <p className="mt-2 text-sm sm:text-base text-blue-200/90 opacity-90">
+            {item.desc}
+          </p>
+        </div>
+
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 flex items-center gap-2">
+          {items.map((_, i) => (
+            <div
+              key={i}
+              className={`w-2 h-2 rounded-full ${i === idx ? 'bg-red-400' : 'bg-white/30'} transition-all duration-300`}
+            />
+          ))}
+        </div>
+
+        <motion.div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+      </motion.div>
+    )
+  }
 
   // Clear error styling function
   const clearFieldError = (e) => {
@@ -922,120 +972,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
             animate={heroInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }}
           >
-            <motion.div 
-              className="aspect-video rounded-lg overflow-hidden shadow-2xl bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center relative group border border-gray-700/30 w-full"
-              whileHover={{ 
-                scale: 1.02,
-                boxShadow: "0 25px 50px rgba(0, 0, 0, 0.5)"
-              }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            >
-              {/* Coming Soon Content */}
-              <div className="text-center relative z-10">
-                {/* Trihari Universal Logo */}
-                <motion.div 
-                  className="mb-3 sm:mb-4"
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={heroInView ? { scale: 1, opacity: 1 } : {}}
-                  transition={{ duration: 1.2, delay: 0.6 }}
-                >
-                  <motion.img 
-                    src={logo} 
-                    alt="Trihari Universal Logo" 
-                    className="h-10 w-10 sm:h-12 sm:w-12 object-contain mx-auto opacity-90 rounded-full"
-                    animate={{ 
-                      rotate: [0, 360]
-                    }}
-                    transition={{ 
-                      rotate: { duration: 20, repeat: Infinity, ease: "linear" }
-                    }}
-                    whileHover={{ scale: 1.1 }}
-                  />
-                </motion.div>
-
-                <motion.h3 
-                  className="text-xl sm:text-2xl font-black tracking-wider mb-1 text-white"
-                  style={{
-                    textShadow: '0 0 20px rgba(59, 130, 246, 0.5)'
-                  }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={heroInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.8, delay: 0.8 }}
-                >
-                  COMING
-                </motion.h3>
-                
-                <motion.h3 
-                  className="text-xl sm:text-2xl font-black tracking-wider mb-3 text-blue-400"
-                  style={{
-                    textShadow: '0 0 20px rgba(59, 130, 246, 0.6)'
-                  }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={heroInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.8, delay: 1.0 }}
-                >
-                  SOON
-                </motion.h3>
-                
-                <motion.div 
-                  className="flex items-center justify-center gap-1 sm:gap-2 mb-2 sm:mb-3"
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={heroInView ? { opacity: 1, scale: 1 } : {}}
-                  transition={{ duration: 0.8, delay: 1.2 }}
-                >
-                  <div className="h-px bg-blue-500/60 flex-1 max-w-8 sm:max-w-12"></div>
-                  <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-blue-400/80 font-medium px-1">
-                    Feature Film
-                  </span>
-                  <div className="h-px bg-blue-500/60 flex-1 max-w-8 sm:max-w-12"></div>
-                </motion.div>
-                
-                <motion.p 
-                  className="text-xs sm:text-sm text-blue-300/70 font-medium"
-                  initial={{ opacity: 0 }}
-                  animate={heroInView ? { opacity: 1 } : {}}
-                  transition={{ duration: 0.8, delay: 1.4 }}
-                >
-                  Next Production
-                </motion.p>
-              </div>
-              
-              {/* Subtle Cinematic Glow */}
-              <motion.div 
-                className="absolute inset-0 bg-gradient-to-t from-blue-900/20 via-transparent to-transparent rounded-lg"
-                animate={{ 
-                  opacity: [0.3, 0.5, 0.3]
-                }}
-                transition={{ 
-                  duration: 4, 
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-              
-              {/* Film Scanlines */}
-              <div className="absolute inset-0 opacity-5 rounded-lg" style={{
-                backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(59,130,246,0.1) 2px, rgba(59,130,246,0.1) 4px)'
-              }}></div>
-              
-              {/* Elegant Corner Frames - Mobile Simplified */}
-              <div className="absolute top-2 left-2">
-                <div className="w-4 h-px bg-gradient-to-r from-blue-400/60 to-transparent"></div>
-                <div className="w-px h-4 bg-gradient-to-b from-blue-400/60 to-transparent"></div>
-              </div>
-              <div className="absolute top-2 right-2">
-                <div className="w-4 h-px bg-gradient-to-l from-blue-400/60 to-transparent ml-auto"></div>
-                <div className="w-px h-4 bg-gradient-to-b from-blue-400/60 to-transparent ml-auto"></div>
-              </div>
-              <div className="absolute bottom-2 left-2">
-                <div className="w-px h-4 bg-gradient-to-t from-blue-400/60 to-transparent mb-auto"></div>
-                <div className="w-4 h-px bg-gradient-to-r from-blue-400/60 to-transparent"></div>
-              </div>
-              <div className="absolute bottom-2 right-2">
-                <div className="w-px h-4 bg-gradient-to-t from-blue-400/60 to-transparent ml-auto mb-auto"></div>
-                <div className="w-4 h-px bg-gradient-to-l from-blue-400/60 to-transparent ml-auto"></div>
-              </div>
-            </motion.div>
+            <RotatingBanner items={projects} className="" />
           </motion.div>
 
           {/* Desktop Grid Layout */}
@@ -1113,120 +1050,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
               transition={{ duration: 1.2, delay: 0.4, ease: "easeOut" }}
               style={{ y: useTransform(scrollYProgress, [0, 0.5], [0, 50]) }}
             >
-            <motion.div 
-              className="aspect-video rounded-lg sm:rounded-xl overflow-hidden shadow-2xl bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center relative group border border-gray-700/30 w-full"
-              whileHover={{ 
-                scale: 1.02,
-                boxShadow: "0 25px 50px rgba(0, 0, 0, 0.5)"
-              }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            >
-              {/* Coming Soon Content */}
-              <div className="text-center relative z-10">
-                {/* Trihari Universal Logo */}
-                <motion.div 
-                  className="mb-4 sm:mb-6"
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={heroInView ? { scale: 1, opacity: 1 } : {}}
-                  transition={{ duration: 1.2, delay: 0.6 }}
-                >
-                  <motion.img 
-                    src={logo} 
-                    alt="Trihari Universal Logo" 
-                    className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 object-contain mx-auto opacity-90 rounded-full"
-                    animate={{ 
-                      rotate: [0, 360]
-                    }}
-                    transition={{ 
-                      rotate: { duration: 20, repeat: Infinity, ease: "linear" }
-                    }}
-                    whileHover={{ scale: 1.1 }}
-                  />
-                </motion.div>
-
-                <motion.h3 
-                  className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-wider mb-2 text-white"
-                  style={{
-                    textShadow: '0 0 20px rgba(59, 130, 246, 0.5)'
-                  }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={heroInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.8, delay: 0.8 }}
-                >
-                  COMING
-                </motion.h3>
-                
-                <motion.h3 
-                  className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-wider mb-4 sm:mb-6 text-blue-400"
-                  style={{
-                    textShadow: '0 0 20px rgba(59, 130, 246, 0.6)'
-                  }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={heroInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.8, delay: 1.0 }}
-                >
-                  SOON
-                </motion.h3>
-                
-                <motion.div 
-                  className="flex items-center justify-center gap-2 sm:gap-4 mb-3 sm:mb-4"
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={heroInView ? { opacity: 1, scale: 1 } : {}}
-                  transition={{ duration: 0.8, delay: 1.2 }}
-                >
-                  <div className="h-px bg-blue-500/60 flex-1 max-w-12 sm:max-w-16"></div>
-                  <span className="text-[10px] sm:text-xs uppercase tracking-widest text-blue-400/80 font-medium px-2">
-                    Feature Film
-                  </span>
-                  <div className="h-px bg-blue-500/60 flex-1 max-w-12 sm:max-w-16"></div>
-                </motion.div>
-                
-                <motion.p 
-                  className="text-sm text-blue-300/70 font-medium"
-                  initial={{ opacity: 0 }}
-                  animate={heroInView ? { opacity: 1 } : {}}
-                  transition={{ duration: 0.8, delay: 1.4 }}
-                >
-                  Next Production
-                </motion.p>
-              </div>
-              
-              {/* Subtle Cinematic Glow */}
-              <motion.div 
-                className="absolute inset-0 bg-gradient-to-t from-blue-900/20 via-transparent to-transparent rounded-xl"
-                animate={{ 
-                  opacity: [0.3, 0.5, 0.3]
-                }}
-                transition={{ 
-                  duration: 4, 
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-              
-              {/* Film Scanlines */}
-              <div className="absolute inset-0 opacity-5 rounded-xl" style={{
-                backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(59,130,246,0.1) 2px, rgba(59,130,246,0.1) 4px)'
-              }}></div>
-              
-              {/* Elegant Corner Frames */}
-              <div className="absolute top-4 left-4">
-                <div className="w-6 h-px bg-gradient-to-r from-blue-400/60 to-transparent"></div>
-                <div className="w-px h-6 bg-gradient-to-b from-blue-400/60 to-transparent"></div>
-              </div>
-              <div className="absolute top-4 right-4">
-                <div className="w-6 h-px bg-gradient-to-l from-blue-400/60 to-transparent ml-auto"></div>
-                <div className="w-px h-6 bg-gradient-to-b from-blue-400/60 to-transparent ml-auto"></div>
-              </div>
-              <div className="absolute bottom-4 left-4">
-                <div className="w-px h-6 bg-gradient-to-t from-blue-400/60 to-transparent mb-auto"></div>
-                <div className="w-6 h-px bg-gradient-to-r from-blue-400/60 to-transparent"></div>
-              </div>
-              <div className="absolute bottom-4 right-4">
-                <div className="w-px h-6 bg-gradient-to-t from-blue-400/60 to-transparent ml-auto mb-auto"></div>
-                <div className="w-6 h-px bg-gradient-to-l from-blue-400/60 to-transparent ml-auto"></div>
-              </div>
-            </motion.div>
+            <RotatingBanner items={projects} className="sm:rounded-xl" />
             </motion.div>
           </div>
         </div>
@@ -1627,11 +1451,11 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
               
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <div className="text-2xl font-bold text-red-500">50+</div>
+                  <div className="text-2xl font-bold text-red-500">3+</div>
                   <div className="text-sm opacity-70">Projects Completed</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-red-500">15+</div>
+                  <div className="text-2xl font-bold text-red-500">5+</div>
                   <div className="text-sm opacity-70">Award Wins</div>
                 </div>
                 <div>
@@ -1719,7 +1543,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                   >
                     <div className="h-px bg-blue-500/60 flex-1 max-w-12"></div>
                     <span className="text-xs uppercase tracking-widest text-blue-400/80 font-medium">
-                      Since 2019
+                      Since 2023
                     </span>
                     <div className="h-px bg-blue-500/60 flex-1 max-w-12"></div>
                   </motion.div>
