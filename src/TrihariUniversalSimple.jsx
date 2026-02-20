@@ -680,7 +680,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
   const projects = [
 
     // Existing placeholders
-    { title: 'State V/S Amit Vyas', category: 'Film', desc: 'A courtroom drama exploring truth and justice.',image: `${baseUrl}statevsamit.jpeg` },
+    { title: 'State V/S Amit Vyas', category: 'Film', desc: 'A courtroom drama exploring truth and justice.', image: `${baseUrl}statevsamit.jpeg`, link: 'https://www.instagram.com/p/DUlK00ZjIqb/?igsh=MTVjNGltNTFjMW1wcw==' },
     { title: 'Bedhai', category: 'Film', desc: 'A small town romantic story.', image: `${baseUrl}bedhai.jpeg`}
   ]
 
@@ -1209,7 +1209,13 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                   {project.desc}
                 </p>
                 <div className="mt-3 text-red-500 text-xs font-medium">
-                  View →
+                  {project.link ? (
+                    <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-red-500 hover:underline">
+                      View →
+                    </a>
+                  ) : (
+                    'View →'
+                  )}
                 </div>
               </div>
             </motion.div>
