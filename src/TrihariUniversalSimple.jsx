@@ -681,7 +681,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
 
     // Existing placeholders
     { title: 'State V/S Amit Vyas', category: 'Film', desc: 'A courtroom drama exploring truth and justice.', image: `${baseUrl}statevsamit.jpeg`, link: 'https://www.instagram.com/p/DUlK00ZjIqb/?igsh=MTVjNGltNTFjMW1wcw==' },
-    { title: 'Bedhai', category: 'Film', desc: 'A small town romantic story.', image: `${baseUrl}bedhai.jpeg`}
+    { title: 'Bedhai', category: 'Film', desc: 'A small town romantic story.', image: `${baseUrl}bedhai.jpeg`, link: 'https://www.instagram.com/p/DUsMNn3DAMq/?igsh=MTFqYzV2M2R5M3EyYQ==' }
   ]
 
   // Rotating banner component for hero (cycles every 3s)
