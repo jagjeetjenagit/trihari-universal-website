@@ -12,7 +12,7 @@ import GoogleSheetsTestPanel from './components/GoogleSheetsTestPanel'
 const baseUrl = import.meta.env.BASE_URL || '/'
 const cacheVersion = '?v=2025-09-28-white-logo'
 const logo = `${baseUrl}trihari_universal_white.png${cacheVersion}`
-const founderImage = `${baseUrl}1000010434.jpg${cacheVersion}`
+const founderImage = `${baseUrl}newfounderpic.png${cacheVersion}`
 
 // Section Divider Component - Mobile Only
 const SectionDivider = () => (
@@ -2194,7 +2194,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
           className="flex flex-col items-center mb-16"
         >
           <div className="flex justify-center mb-8">
-            {/* Founder - Siddhant Badhani */}
+            {/* Founder - Neelakshi Badhani */}
             <motion.div
               className="relative group flex flex-col items-center"
               whileHover={{ scale: 1.05 }}
@@ -2204,7 +2204,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
                 {/* Founder Image - Clean and Clear */}
                 <img 
                   src={founderImage} 
-                  alt="Siddhant Badhani - Founder & Creative Director" 
+                  alt="Neelakshi Badhani - Founder & Creative Director" 
                   className="w-full h-full object-cover rounded-full group-hover:scale-105 transition-transform duration-300"
                 />
                 
@@ -2214,7 +2214,7 @@ Error: ${emailResult.reason?.message || 'Email service unavailable'}`
               
               {/* Founder info */}
               <div className="text-center mt-4 flex flex-col items-center">
-                <h4 className="font-semibold text-base md:text-lg mb-1">Siddhant Badhani</h4>
+                <h4 className="font-semibold text-base md:text-lg mb-1">Neelakshi Badhani</h4>
                 <p className="text-sm md:text-base opacity-70 mb-2">Founder & Creative Director</p>
                 
                 {/* Additional glow accent under text */}
